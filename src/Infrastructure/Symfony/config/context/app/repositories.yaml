@@ -1,0 +1,51 @@
+services:
+  _defaults:
+    autowire: false
+    autoconfigure: false
+    public: false
+
+  ## ResourceTags
+  XTags\Infrastructure\Domain\Model\ResourceTags\DoctrineResourceTagsRepository:
+    class: XTags\Infrastructure\Domain\Model\ResourceTags\DoctrineResourceTagsRepository
+    arguments:
+      $doctrineRepository: '@XTags\App\Repository\ResourceTagsRepository'
+
+  XTags\Domain\Model\ResourceTags\ResourceTagsRepository:
+      alias: XTags\Infrastructure\Domain\Model\ResourceTags\DoctrineResourceTagsRepository
+
+  ## Types
+  XTags\Infrastructure\Domain\Model\Types\DoctrineTypesRepository:
+    class: XTags\Infrastructure\Domain\Model\Types\DoctrineTypesRepository
+    arguments:
+      $doctrineRepository: '@XTags\App\Repository\TypesRepository'
+
+  XTags\Domain\Model\Types\TypesRepository:
+      alias: XTags\Infrastructure\Domain\Model\Types\DoctrineTypesRepository
+
+  ## Tags
+  XTags\Infrastructure\Domain\Model\Tags\DoctrineTagsRepository:
+    class: XTags\Infrastructure\Domain\Model\Tags\DoctrineTagsRepository
+    arguments:
+      $doctrineRepository: '@XTags\App\Repository\TagsRepository'
+
+  XTags\Domain\Model\Tags\TagsRepository:
+      alias: XTags\Infrastructure\Domain\Model\Tags\DoctrineTagsRepository
+
+  ## TagLabel
+  XTags\Infrastructure\Domain\Model\TagLabel\DoctrineTagLabelRepository:
+    class: XTags\Infrastructure\Domain\Model\TagLabel\DoctrineTagLabelRepository
+    arguments:
+      $doctrineRepository: '@XTags\App\Repository\TagLabelRepository'
+
+  XTags\Domain\Model\TagLabel\TagLabelRepository:
+      alias: XTags\Infrastructure\Domain\Model\TagLabel\DoctrineTagLabelRepository
+
+  ## Vocabularies
+  XTags\Infrastructure\Domain\Model\Vocabularies\DoctrineVocabulariesRespository:
+    class: XTags\Infrastructure\Domain\Model\Vocabularies\DoctrineVocabulariesRespository
+    arguments:
+      $doctrineRepository: '@XTags\App\Repository\VocabulariesRepository'
+
+  XTags\Domain\Model\Vocabularies\VocabulariesRepository:
+      alias: XTags\Infrastructure\Domain\Model\Vocabularies\DoctrineVocabulariesRespository
+

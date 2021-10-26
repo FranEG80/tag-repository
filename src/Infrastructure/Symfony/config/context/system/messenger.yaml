@@ -1,0 +1,74 @@
+services:
+  _defaults:
+    autowire: false
+    autoconfigure: false
+    public: false
+
+  bus.middleware.handler_exception_catcher:
+    class: PcComponentes\SymfonyMessengerBundle\Middleware\HandlerExceptionCatcherMiddleware
+
+  bus.middleware.force_sync:
+    class: PcComponentes\SymfonyMessengerBundle\Middleware\ForceSyncMiddleware
+
+  bus.middleware.routing_key:
+    class: PcComponentes\SymfonyMessengerBundle\Middleware\RoutingKeyMiddleware
+
+  # Publisher Middleware
+  bus.middleware.publisher.command:
+    class: PcComponentes\SymfonyMessengerBundle\Middleware\SimpleMessagePublisherMiddleware
+    arguments:
+      - '@publish_command.bus'
+      - '@pccom.messenger_bundle.bus.all_handled.extractor'
+
+  # Execution Time Middleware
+  bus.middleware.execution_time:
+    class: PcComponentes\DddLogging\ExecutionTime\ExecutionTimeMiddleware
+    autowire: true
+
+  # Logging Middleware
+  bus.middleware.logging.processor.domain_event:
+    autowire: true
+    class: PcComponentes\DddLogging\MessageLogger\MessageLoggerMiddleware
+    arguments:
+      $action: '@bus.middleware.logging.action.process'
+    tags:
+      - { name: monolog.logger, handler: domain_event, channel: domain_event }
+
+  bus.middleware.logging.processor.command:
+    autowire: true
+    class: PcComponentes\DddLogging\MessageLogger\MessageLoggerMiddleware
+    arguments:
+      $action: '@bus.middleware.logging.action.process'
+    tags:
+      - { name: monolog.logger, handler: commands, channel: command }
+
+  bus.middleware.logging.publisher.command:
+    autowire: true
+    class: PcComponentes\DddLogging\MessageLogger\MessageLoggerMiddleware
+    arguments:
+      $action: '@bus.middleware.logging.action.publish'
+    tags:
+      - { name: monolog.logger, handler: commands, channel: command }
+
+  bus.middleware.logging.publisher.domain_event:
+    autowire: true
+    class: PcComponentes\DddLogging\MessageLogger\MessageLoggerMiddleware
+    arguments:
+      $action: '@bus.middleware.logging.action.publish'
+    tags:
+      - { name: monolog.logger, handler: domain_event, channel: domain_event }
+
+  bus.middleware.logging.action.publish:
+    class: PcComponentes\DddLogging\MessageLogger\Action\PublishAction
+
+  bus.middleware.logging.action.process:
+    class: PcComponentes\DddLogging\MessageLogger\Action\ProcessAction
+
+  # Trace Middleware
+  bus.middleware.trace.message:
+    class: PcComponentes\DddLogging\DomainTrace\MessageTraceMiddleware
+    autowire: true
+
+  bus.middleware.trace.request:
+    class: PcComponentes\DddLogging\DomainTrace\RequestTraceMiddleware
+    autowire: true

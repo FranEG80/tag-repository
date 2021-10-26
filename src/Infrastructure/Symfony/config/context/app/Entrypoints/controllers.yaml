@@ -1,0 +1,13 @@
+services:
+  _defaults:
+    autowire: false
+    autoconfigure: false
+    public: false
+
+  XTags\Infrastructure\Entrypoint\Controller\:
+    autowire: true
+    autoconfigure: true
+    resource: '../../../../../Entrypoint/Controller/*/*'
+    tags: ['controller.service_arguments']
+    bind:
+      Symfony\Component\Messenger\MessageBusInterface $commandBus: '@execute_command.bus'

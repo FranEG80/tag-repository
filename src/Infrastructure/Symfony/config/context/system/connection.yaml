@@ -1,0 +1,14 @@
+services:
+  _defaults:
+    autowire: false
+    autoconfigure: false
+    public: false
+
+  connection.dbal.xtags:
+    class: Doctrine\DBAL\Connection
+    factory: 'Doctrine\DBAL\DriverManager::getConnection'
+    arguments:
+      $params:
+        url: '%env(DATABASE_DSN)%'
+        driver: pdo_mysql
+        charset: UTF8

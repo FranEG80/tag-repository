@@ -1,0 +1,9 @@
+tags_search_query.get:
+  path: /{query}
+  methods: [GET]
+  controller: XTags\Infrastructure\Entrypoint\Controller\TagsController\Search\GetSearchTagsController
+
+tags_search.get:
+  path: /
+  methods: [GET]
+  controller: XTags\Infrastructure\Entrypoint\Controller\TagsController\Search\GetSearchTagsController

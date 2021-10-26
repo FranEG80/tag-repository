@@ -1,0 +1,10 @@
+heath_check.get:
+  prefix: /
+  methods: [GET]
+  resource: HealthCheckGet.yaml
+
+heath_check.defaults:
+  path: /
+  methods: [POST, PUT, DELETE, PATCH]
+  controller: XTags\Infrastructure\Entrypoint\Controller\NotImplementedController\NotImplementedController
+  

@@ -1,0 +1,15 @@
+vocabularies_search.get:
+  path: /search
+  methods: [GET]
+  controller: XTags\Infrastructure\Entrypoint\Controller\VocabulariesController\Search\GetSearchVocabulariesController
+
+vocabularies_search.default:
+  path: /
+  methods: [POST, PUT, DELETE, PATCH]
+  controller: XTags\Infrastructure\Entrypoint\Controller\NotImplementedController\NotImplementedController
+
+vocabularies.get:
+  path: /
+  methods: [GET]
+  controller: XTags\Infrastructure\Entrypoint\Controller\VocabulariesController\Get\GetVocabulariesController
+

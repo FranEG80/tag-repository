@@ -1,0 +1,115 @@
+version: "3.7"
+
+networks:
+  ximdex-core-net:
+    name: ximdex_core_net
+
+volumes:
+  database-data:
+  amqp-data:
+
+###> doctrine/doctrine-bundle ###
+  db-data:
+###< doctrine/doctrine-bundle ###
+
+services:
+
+  ximdex_amqp:
+    build:
+      context: .
+      dockerfile: docker/rabbitmq/Dockerfile
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    networks:
+      - ximdex-core-net
+#    ports:
+#      - 15672:15672
+#      - 5672:5672
+    volumes:
+      - amqp-data:/var/lib/rabbitmq
+
+  xtags_rdbms:
+    container_name: xtags_rdbms
+    image: mariadb:10
+    volumes:
+      - database-data:/var/lib/mysql
+      - ./docker/mariadb/initdb.d/:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: mysqladmin -proot ping -h localhost
+      interval: 20s
+      start_period: 10s
+      timeout: 10s
+      retries: 3
+    networks:
+      - ximdex-core-net
+#    ports:
+#      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ${RDBMS_DATABASE}
+      MYSQL_USER: ${RDBMS_USERNAME}
+      MYSQL_PASSWORD: ${RDBMS_PASSWORD}
+
+  xtags_httpd:
+    container_name: xtags_httpd
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+      target: basic
+    networks:
+      - ximdex-core-net
+    ports:
+      - 8180:80
+    volumes:
+      - ./public:/var/www/html
+    depends_on:
+      - xtags_php
+
+  xtags_php:
+    container_name: xtags_php
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      target: development
+    networks:
+      - ximdex-core-net
+    volumes:
+      - ./:/usr/src
+      - ${HOME}/.composer:/home/www-data/.composer
+    depends_on:
+      - ximdex_amqp
+      - xtags_rdbms
+
+  xtags_php_workers:
+    build:
+      context: .
+      dockerfile: docker/php_workers/Dockerfile
+      target: development
+    networks:
+      - ximdex-core-net
+    volumes:
+      - ./:/usr/src
+      - ${HOME}/.composer:/home/www-data/.composer
+      - ./docker/php_workers/supervisor/supervisord.conf:/etc/supervisord.conf
+      - ./docker/php_workers/supervisor/supervisor.d/:/etc/supervisor.d/
+    depends_on:
+      - ximdex_amqp
+      - xtags_rdbms
+    command: [sh, -c, "sleep 15 && /usr/bin/supervisord"]
+
+###> doctrine/doctrine-bundle ###
+  database:
+    image: postgres:${POSTGRES_VERSION:-13}-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      # You should definitely change the password in production
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ChangeMe}
+      POSTGRES_USER: ${POSTGRES_USER:-symfony}
+    volumes:
+      - db-data:/var/lib/postgresql/data:rw
+      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
+      # - ./docker/db/data:/var/lib/postgresql/data:rw
+###< doctrine/doctrine-bundle ###

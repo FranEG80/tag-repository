@@ -1,0 +1,13 @@
+imports:
+  - { resource: connection.yaml }
+  - { resource: messenger.yaml }
+  
+services:
+  _defaults:
+    autowire: false
+    autoconfigure: false
+    public: false
+
+  GuzzleHttp\Client:
+    public: true
+    class: GuzzleHttp\Client

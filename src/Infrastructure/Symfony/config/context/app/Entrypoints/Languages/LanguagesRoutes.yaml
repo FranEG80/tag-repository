@@ -1,0 +1,10 @@
+languages.get:
+  path: /
+  methods: [GET]
+  controller: XTags\Infrastructure\Entrypoint\Controller\LanguagesController\Get\GetLanguagesController
+
+languages.default:
+  path: /
+  methods: [POST, PUT, DELETE, PATCH]
+  controller: XTags\Infrastructure\Entrypoint\Controller\NotImplementedController\NotImplementedController
+

@@ -1,0 +1,45 @@
+imports:
+  - { resource: repositories.yaml }
+  - { resource: Entrypoints/controllers.yaml }
+
+services:
+  _defaults:
+    autowire: false
+    autoconfigure: false
+    public: false
+
+  XTags\Application\:
+    autowire: true
+    autoconfigure: false
+    resource: '../../../../../Application/{Command,Query}/*/*/*Handler.php'
+    bind:
+      Symfony\Component\Messenger\MessageBusInterface $eventBus: '@publish_event.bus'
+    tags:
+      - { name: messenger.message_handler, bus: execute_command.bus }
+
+  XTags\Domain\:
+    autowire: true
+    autoconfigure: true
+    resource: '../../../../../Domain/*'
+
+  XTags\Infrastructure\:
+    autowire: true
+    autoconfigure: true
+    resource: '../../../../../Infrastructure/*'
+    exclude:
+      - '../../../../../Infrastructure/Entrypoint/{Controller,Command}/*'
+      - '../../../../../Infrastructure/{Domain,Projection}/Model/*/*Repository.php'
+      - '../../../../../Infrastructure/Service/EventHandler/*'
+      - '../../../../../Infrastructure/Symfony/*'
+
+  XTags\Infrastructure\Service\EventHandler\:
+    autowire: true
+    autoconfigure: false
+    resource: '../../../../../Infrastructure/Service/EventHandler/*'
+    tags:
+      - { name: messenger.message_handler, bus: execute_event.bus }
+
+  XTags\Shared\:
+    autowire: true
+    autoconfigure: true
+    resource: '../../../../../Shared/*'

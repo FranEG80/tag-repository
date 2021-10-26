@@ -1,0 +1,3 @@
+app_routes:
+  resource: context/app/Entrypoints/routes.yaml
+  prefix: /api

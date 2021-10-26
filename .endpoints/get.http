@@ -1,0 +1,39 @@
+
+#### VOCABULARIES
+
+###
+GET http://localhost/ximdex/xtags/public/index.php/api/vocabularies/search?q=ab
+
+###
+GET http://localhost/ximdex/xtags/public/index.php/api/vocabularies/
+
+
+#### LANGUAGES
+
+###
+GET http://localhost/ximdex/xtags/public/index.php/api/languages/
+
+
+#### TYPES
+
+###
+GET http://localhost/ximdex/xtags/public/index.php/api/types
+
+
+#### TAG_LABEL
+
+###
+GET http://localhost/ximdex/xtags/public/index.php/api/tag-label/
+
+
+#### RESOURCE_TAGS
+
+###
+GET http://localhost/ximdex/xtags/public/index.php/api/resource-tags/
+
+
+
+#### TAGS
+
+###
+GET http://localhost/ximdex/xtags/public/index.php/api/tags/

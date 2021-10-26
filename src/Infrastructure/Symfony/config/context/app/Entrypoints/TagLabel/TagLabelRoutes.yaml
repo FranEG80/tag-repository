@@ -1,0 +1,9 @@
+tag_label.get:
+  path: /{id?}
+  methods: [GET]
+  controller: XTags\Infrastructure\Entrypoint\Controller\TagLabelController\Get\GetTagLabelController
+
+tag_label.default:
+  path: /
+  methods: [POST, PUT, DELETE, PATCH]
+  controller: XTags\Infrastructure\Entrypoint\Controller\NotImplementedController\NotImplementedController

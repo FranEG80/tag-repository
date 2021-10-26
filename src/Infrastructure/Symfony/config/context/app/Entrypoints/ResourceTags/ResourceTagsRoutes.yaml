@@ -1,0 +1,9 @@
+resouce_tags.get:
+  path: /{id?}
+  methods: [GET]
+  controller: XTags\Infrastructure\Entrypoint\Controller\ResourceTagsController\Get\GetResourceTagsController
+
+resouce_tags.default:
+  path: /
+  methods: [POST, PUT, DELETE, PATCH]
+  controller: XTags\Infrastructure\Entrypoint\Controller\NotImplementedController\NotImplementedController

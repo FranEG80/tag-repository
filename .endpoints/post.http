@@ -1,0 +1,21 @@
+###
+POST http://localhost/ximdex/xtags/public/index.php/api/tags/ HTTP/1.1
+content-type: application/json
+
+{
+    "resourceid": "2124bd8e-eabf-4f90-8d2c-2ed1ab121409",
+    "vocabularyId": 1,
+    "langId": 1,
+    "typeId": 1
+}
+
+POST http://localhost/ximdex/xtags/public/index.php/api/tags/ HTTP/1.1
+content-type: application/json
+
+{
+    "resourceid": "2124bd8e-eabf-4f90-8d2c-2ed1ab121409",
+    "customName": "Name Custom",
+    "vocabularyId": 1,
+    "langId": 1,
+    "typeId": 1
+}

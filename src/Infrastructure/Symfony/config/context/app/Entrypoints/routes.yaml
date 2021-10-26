@@ -1,0 +1,27 @@
+app.heath_check:
+  resource: HealthCheck/HealthCheckRoutes.yaml
+  prefix: /health-check
+
+app.tags:
+  resource: Tags/TagsRoutes.yaml
+  prefix: /tags
+
+app.vocabularies:
+  resource: Vocabularies/VocabulariesRoutes.yaml
+  prefix: /vocabularies
+
+app.languages:
+  resource: Languages/LanguagesRoutes.yaml
+  prefix: /languages
+
+app.types:
+  resource: Types/TypesRoutes.yaml
+  prefix: /types
+
+app.tag_label:
+  resource: TagLabel/TagLabelRoutes.yaml
+  prefix: /tag-label
+
+app.resource_tag:
+  resource: ResourceTags/ResourceTagsRoutes.yaml
+  prefix: /resource-tags

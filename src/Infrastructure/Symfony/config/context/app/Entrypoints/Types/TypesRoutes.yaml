@@ -1,0 +1,10 @@
+types.get:
+  path: /
+  methods: [GET]
+  controller: XTags\Infrastructure\Entrypoint\Controller\TypesController\Get\GetTypesController
+
+types.default:
+  path: /
+  methods: [POST, PUT, DELETE, PATCH]
+  controller: XTags\Infrastructure\Entrypoint\Controller\NotImplementedController\NotImplementedController
+
