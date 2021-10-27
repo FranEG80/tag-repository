@@ -5,20 +5,21 @@ namespace XTags\Application\Query\ResourceTags\GetByIdResourceTag;
 
 use Symfony\Component\Messenger\MessageBusInterface;
 use XTags\Domain\Model\ResourceTags\ResourceTagsCollection;
-use XTags\Domain\Model\ResourceTags\ResourceTagsRepository;
+use XTags\Domain\Service\Resource\ByIdResourceFinder;
 use XTags\Domain\Service\ResourceTags\AllResourceTagsFinder;
+use XTags\Shared\Domain\Model\ValueObject\Version;
 
 class GetByIdResourceTagHandler
 {
 
-    private AllResourceTagsFinder $allResourceTagsFinder;
+    private ByIdResourceFinder $allResourceTagsFinder;
 
     public function __construct(
-        AllResourceTagsFinder $allResourceTagsFinder,
+        ByIdResourceFinder $getResourceById,
         MessageBusInterface $eventBus
     )
     {
-        $this->allResourceTagsFinder = $allResourceTagsFinder;
+        $this->getResourceById = $getResourceById;
     }
 
     /**
@@ -27,7 +28,7 @@ class GetByIdResourceTagHandler
     public function __invoke(GetByIdResourceTagQuery $query)
     {
         $tagLabel = [];
-        $tagLabel[] = ($this->allResourceTagsFinder)();
+        $tagLabel[] = ($this->getResourceById)($query->resourceId(), $query->version());
         return $tagLabel;
     }
 }

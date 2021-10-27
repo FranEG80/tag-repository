@@ -29,7 +29,10 @@ GET http://localhost/ximdex/xtags/public/index.php/api/tag-label/
 #### RESOURCE_TAGS
 
 ###
-GET http://localhost/ximdex/xtags/public/index.php/api/resource-tags/
+GET http://localhost/ximdex/xtags/public/index.php/api/resource-tags?id=30000000-0000-0000-0000-000000000000
+
+###
+GET http://localhost/ximdex/xtags/public/index.php/api/resource-tags?id=a4cdcfaf-4ec0-4f0a-ac88-30ae71a2c622&version=1
 
 
 

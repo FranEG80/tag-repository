@@ -4,32 +4,45 @@ declare(strict_types=1);
 namespace XTags\Domain\Model\ResourceTags\Event;
 
 use XTags\Domain\Model\ResourceTags\ValueObject\ResourceTagId;
-use XTags\Domain\Model\Tags\ValueObject\TagId;
 use XTags\Shared\Domain\Model\ValueObject\Uuid;
 use XTags\Infrastructure\Message\Generator\ResourceTags\ResourceTagsEvent;
 use PcComponentes\Ddd\Domain\Model\DomainEvent;
 use PcComponentes\Ddd\Domain\Model\ValueObject\DateTimeValueObject;
+use XTags\Domain\Model\ResourceTags\ValueObject\ExternalResourceId;
+use XTags\Shared\Domain\Model\ValueObject\Version;
 
 final class ResourceTagWasCreated extends DomainEvent
 {
     private const NAME = 'was_created';
     private const VERSION = '1';
 
-    private string $name;
+    private ResourceTagId $id;
+    private ExternalResourceId $resourceId;
+    private Version $version;
 
-    public static function from(ResourceTagId $resource_id, TagId $tag_id)
+    public static function from(ResourceTagId $id, ExternalResourceId $resourceId, Version $version)
     {
         return self::fromPayload(
             Uuid::v4(),
-            $resource_id,
+            $resourceId,
             new DateTimeValueObject(),
-            self::buildPayload($tag_id),
+            self::buildPayload($id, $resourceId),
         );
     }
 
-    public function name(): string
+    public function id(): ResourceTagId
     {
-        return $this->name;
+        return $this->id;
+    }
+
+    public function resourceId(): ExternalResourceId
+    {
+        return $this->resourceId;
+    }
+
+    public function version(): Version
+    {
+        return $this->version;
     }
 
     public static function messageName(): string
@@ -46,14 +59,17 @@ final class ResourceTagWasCreated extends DomainEvent
     {
         $payload = $this->messagePayload();
 
-        $this->name = $payload['name'];
+        $this->id = $payload['id'];
+        $this->resourceId = $payload['resourceId'];
+        $this->version = $payload['version'];
     }
 
-    private static function buildPayload(TagId $tag_id): array
+    private static function buildPayload(ResourceTagId $id, ExternalResourceId $resourceId): array
     {
         return \json_decode(
             \json_encode([
-                'name' => $tag_id->__toString()
+                'id' => $id->value(),
+                'external_resource_id' => $resourceId
             ]),
             true,
         );

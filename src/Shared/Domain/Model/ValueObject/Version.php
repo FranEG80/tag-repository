@@ -2,8 +2,8 @@
 
 namespace XTags\Shared\Domain\Model\ValueObject;
 
-use PcComponentes\Ddd\Domain\Model\ValueObject\IntValueObject;
+use PcComponentes\Ddd\Domain\Model\ValueObject\StringValueObject;
 
-class Version extends IntValueObject
+class Version extends StringValueObject
 {
 }

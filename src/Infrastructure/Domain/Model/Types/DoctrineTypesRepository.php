@@ -4,12 +4,12 @@ declare(strict_types=1);
 namespace XTags\Infrastructure\Domain\Model\Types;
 
 use XTags\App\Entity\EntityManager;
-use XTags\App\Entity\Types as EntityTypes;
-use XTags\App\Repository\TypesRepository as DoctrineRespository;
+use XTags\App\Entity\Type as EntityTypes;
+use XTags\App\Repository\TypeRepository as DoctrineRespository;
 use XTags\Domain\Model\Types\ValueObject\TypesId;
 use XTags\Domain\Model\Types\ValueObject\TypesName;
-use Xtags\Domain\Model\Types\Types as TypesModel;
-use XTags\Domain\Model\Types\TypesCollection;
+use Xtags\Domain\Model\Types\Types as DomainModel;
+use XTags\Domain\Model\Types\TypesCollection as DomainCollection;
 use XTags\Domain\Model\Types\TypesRepository as DomainRepository;
 use XTags\Shared\Domain\Model\ValueObject\Id;
 
@@ -22,20 +22,22 @@ final class DoctrineTypesRepository extends EntityManager implements DomainRepos
         $this->doctrineRepository = $doctrineRepository;
     }
 
-    public function save(TypesModel $types): void 
+    public function save(DomainModel $types): void 
     {
         $typesEntity = $this->modelToEntity($types, new EntityTypes());
         $this->saveEntity($typesEntity);
     }
 
-    public function find(Id $id): TypesModel
+    public function find(Id $id): DomainModel
     {
-        $types = $this->doctrineRepository->find($id);
-        
-        return $this->entityToModel($types);
+        $type = $this->doctrineRepository->find($id);
+
+        if ($type) $type = $this->entityToModel($type);
+
+        return $type;
     }
 
-    public function findAll(): TypesCollection
+    public function findAll(): DomainCollection
     {
         $collection = [];
         $typess = $this->doctrineRepository->findAll();
@@ -43,21 +45,21 @@ final class DoctrineTypesRepository extends EntityManager implements DomainRepos
         foreach ($typess as $types) {
             $collection[] = $this->entityToModel($types);
         }
-        $typesCollection = TypesCollection::from($collection);
+        $typesCollection = DomainCollection::from($collection);
         return $typesCollection;
 
     }
 
-    public function modelToEntity(TypesModel $typesModel, EntityTypes $typesEntity): EntityTypes
+    public function modelToEntity(DomainModel $typesModel, EntityTypes $typesEntity): EntityTypes
     {
         $typesEntity->setName($typesModel->name()->value());
 
         return $typesEntity;
     }
 
-    public function entityToModel(EntityTypes $types): TypesModel
+    public function entityToModel(EntityTypes $types): DomainModel
     { 
-        $typesModel = TypesModel::from(
+        $typesModel = DomainModel::from(
             TypesId::from($types->getId()),
             TypesName::from($types->getName())
         );

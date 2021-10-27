@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace XTags\Domain\Model\ResourceTags;
 
 use XTags\Domain\Model\ResourceTags\Event\ResourceTagWasCreated;
+use XTags\Domain\Model\ResourceTags\ValueObject\ExternalResourceId;
 use XTags\Domain\Model\ResourceTags\ValueObject\ResourceTagId;
-use XTags\Domain\Model\Tags\ValueObject\TagId;
 use XTags\Shared\Domain\Model\DomainModel;
 use XTags\Shared\Domain\Model\ValueObject\DateTimeInmutable;
 use XTags\Shared\Domain\Model\ValueObject\Version;
@@ -15,19 +15,25 @@ final class ResourceTags extends DomainModel
     private const MODEL_NAME = 'resourceTag';
     const CURRENT_VERSION_RESOURCE_TAG = '1';
 
-    private ResourceTagId $resource_id;
-    private TagId $tag_id;
+    private ResourceTagId $id;
+    private ExternalResourceId $resourceId;
     private Version $version;
     private DateTimeInmutable $createdAt;
     private DateTimeInmutable $updatedAt;
 
-    private function __construct(ResourceTagId $resource_id, $tag_id, $version = null, DateTimeInmutable $createdAt = null, DateTimeInmutable $updatedAt = null)
+    private function __construct(
+        ResourceTagId $id, 
+        ExternalResourceId $resourceId, 
+        Version $version = null, 
+        DateTimeInmutable $createdAt = null, 
+        DateTimeInmutable $updatedAt = null
+    )
     {
-        $this->resource_id = $resource_id;
-        $this->tag_id = $tag_id;
-        if (!$version) $this->version = Version::from((int) self::CURRENT_VERSION_RESOURCE_TAG);
-        if ($createdAt) $this->createdAt = $createdAt;
-        if ($updatedAt) $this->updatedAt = $updatedAt;
+        $this->id = $id;
+        $this->resourceId = $resourceId;
+        $this->version = ($version) ? $version : Version::from(self::CURRENT_VERSION_RESOURCE_TAG);
+        $this->createdAt = ($createdAt) ? $createdAt : new DateTimeInmutable('now');
+        $this->updatedAt = ($updatedAt) ? $createdAt : new DateTimeInmutable('now');
     }
 
     public static function modelName(): string
@@ -38,10 +44,10 @@ final class ResourceTags extends DomainModel
     /**
      * Used to create a non previously existent entity. May register events.
      */
-    public static function create(ResourceTagId $resource_id, TagId $tag_id): self
+    public static function create(ResourceTagId $id, ExternalResourceId $resourceId ): self
     {
-        $instance = new self($resource_id, $tag_id, Version::from((int) self::CURRENT_VERSION_RESOURCE_TAG));
-        $instance->recordThat(ResourceTagWasCreated::from($instance->resourceId(), $instance->tagId()));
+        $instance = new self( $id, $resourceId, Version::from(self::CURRENT_VERSION_RESOURCE_TAG));
+        $instance->recordThat(ResourceTagWasCreated::from($instance->id(), $instance->resourceId(), $instance->version()));
 
         return $instance;
     }
@@ -49,19 +55,25 @@ final class ResourceTags extends DomainModel
     /**
      * Used to hydrate an entity. Does not register events.
      */
-    public static function from(ResourceTagId $resource_id, TagId $tag_id, DateTimeInmutable $createdAt, DateTimeInmutable $updatedAt): self
+    public static function from(
+        ResourceTagId $id,
+        ExternalResourceId $resourceId,
+        Version $version,
+        $createdAt, 
+        $updatedAt
+    ): self
     {
-        return new self($resource_id, $tag_id, $createdAt, $updatedAt);
+        return new self( $id, $resourceId, $version, $createdAt, $updatedAt);
     }
 
-    public function resourceId(): ResourceTagId
+    public function resourceId(): ExternalResourceId
     {
-        return $this->resource_id;
+        return $this->resourceId;
     }
 
-    public function tagId(): TagId
+    public function id(): ResourceTagId
     {
-        return $this->tag_id;
+        return $this->id;
     }
 
     public function version(): Version
@@ -83,8 +95,8 @@ final class ResourceTags extends DomainModel
     public function jsonSerialize()
     {
         return [
-            'resource_id' => $this->resource_id,
-            'tag_id' => $this->tag_id,
+            'id' => $this->id,
+            'external_resource_id' => $this->resourceId,
             'version' => $this->version,
             'createdAt' => $this->createdAt,
             'updatedAt' => $this->updatedAt,

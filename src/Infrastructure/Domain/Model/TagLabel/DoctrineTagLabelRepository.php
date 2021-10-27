@@ -4,15 +4,19 @@ declare(strict_types=1);
 namespace XTags\Infrastructure\Domain\Model\TagLabel;
 
 use XTags\App\Entity\EntityManager;
-use XTags\App\Repository\TagLabelRepository as DoctrineRespository;
-use XTags\Domain\Model\TagLabel\TagLabelRepository as DomainRepository;
-use XTags\App\Entity\TagLabel as EntityTagLabel;
+use XTags\App\Repository\LabelRepository as DoctrineRespository;
+use XTags\App\Entity\Label as DoctrineEntity;
 use XTags\Domain\Model\Languages\ValueObject\LanguagesId;
-use XTags\Domain\Model\TagLabel\ValueObject\TagLabelId;
-use XTags\Domain\Model\TagLabel\ValueObject\TagLabelName;
-use Xtags\Domain\Model\TagLabel\TagLabel as TagLabelModel;
-use XTags\Domain\Model\TagLabel\TagLabelCollection;
+use XTags\Domain\Model\TagLabel\{
+    TagLabelRepository as DomainRepository,
+    TagLabel as DomainModel,
+    TagLabelCollection as DomainCollection
+};
+use XTags\Domain\Model\TagLabel\ValueObject\DefinitionId;
+use XTags\Domain\Model\TagLabel\ValueObject\LabelId;
+use XTags\Domain\Model\TagLabel\ValueObject\LabelName;
 use XTags\Domain\Model\Tags\ValueObject\TagId;
+use XTags\Domain\Model\Vocabularies\ValueObject\VocabulariesId;
 use XTags\Shared\Domain\Model\ValueObject\Id;
 use XTags\Shared\Domain\Model\ValueObject\Version;
 
@@ -26,61 +30,66 @@ class DoctrineTagLabelRepository extends EntityManager implements DomainReposito
         $this->doctrineRepository = $doctrineRepository;
     }
 
-    public function save(TagLabelModel $tagLabel): void 
+    public function save(DomainModel $label): void 
     {
-        $tagLabelEntity = $this->modelToEntity($tagLabel, new EntityTagLabel());
-        $this->saveEntity($tagLabelEntity);
+        $labelEntity = $this->modelToEntity($label, new DoctrineEntity());
+        $this->saveEntity($labelEntity);
     }
 
-    public function find(Id $id): TagLabelModel
+    public function find(Id $id): DomainModel
     {
-        $tagLabel = $this->doctrineRepository->find($id);
+        $label = $this->doctrineRepository->find($id);
+
+        if ($label) $label = $this->entityToModel($label);
         
-        return $this->entityToModel($tagLabel);
+        return $label;
     }
 
-    public function findBy(array $criteria, array $opts): TagLabelCollection
+    public function findBy(array $criteria, array $opts): DomainCollection
     {
-        $tagLabels = $this->doctrineRepository->findBy($criteria, $opts);
+        $labels = $this->doctrineRepository->findBy($criteria, $opts);
         $output = [];
 
-        if ($tagLabels && count($tagLabels) > 0 ) {
-            foreach ($tagLabels as $tagLabel) {
-                $output[] = $this->entityToModel($tagLabel);
+        if ($labels && count($labels) > 0 ) {
+            foreach ($labels as $label) {
+                $output[] = $this->entityToModel($label);
             }
         }
-        return TagLabelCollection::from($output);
+        return DomainCollection::from($output);
     }
 
-    public function findAll(): TagLabelCollection 
+    public function findAll(): DomainCollection 
     {
         $collection = [];
-        $tagLabels = $this->doctrineRepository->findAll();
+        $labels = $this->doctrineRepository->findAll();
         
-        foreach ($tagLabels as $tagLabel) {
-            $collection[] = $this->entityToModel($tagLabel);
+        foreach ($labels as $label) {
+            $collection[] = $this->entityToModel($label);
         }
-        $tagLabelCollection = TagLabelCollection::from($collection);
-        return $tagLabelCollection;
+        $labelCollection = DomainCollection::from($collection);
+        return $labelCollection;
     }
     
-    public function modelToEntity(TagLabelModel $tagLabelModel, EntityTagLabel $tagLabelEntity): EntityTagLabel
+    public function modelToEntity(DomainModel $labelModel, DoctrineEntity $labelEntity): DoctrineEntity
     {
-        $tagLabelEntity->setName($tagLabelModel->name()->value());
+        $labelEntity->setName($labelModel->name()->value());
 
-        return $tagLabelEntity;
+        return $labelEntity;
     }
 
-    public function entityToModel(EntityTagLabel $tagLabel): TagLabelModel
+    public function entityToModel(DoctrineEntity $label): DomainModel
     { 
-        $tagLabelModel = TagLabelModel::from(
-            TagLabelId::from($tagLabel->getId()),
-            TagId::from($tagLabel->getTags()->getId()->value()),
-            TagLabelName::from($tagLabel->getName()),
-            LanguagesId::from($tagLabel->getLang()->getId()),
-            Version::from($tagLabel->getVersion())
+        $labelModel = DomainModel::from(
+            LabelId::from($label->getId()), 
+            LabelName::from($label->getName()), 
+            LanguagesId::from($label->getLanguage()->getId()), 
+            DefinitionId::from($label->getDefinitionId()[0]->getId()),
+            VocabulariesId::from($label->getVocabulary()->getId()),
+            Version::from($label->getVersion()),
+            $label->getCreatedAt(),
+            $label->getUpdatedAt()
         );
 
-        return  $tagLabelModel;
+        return  $labelModel;
     }
 }

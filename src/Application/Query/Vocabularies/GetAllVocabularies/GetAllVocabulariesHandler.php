@@ -4,7 +4,6 @@ namespace XTags\Application\Query\Vocabularies\GetAllVocabularies;
 
 use Symfony\Component\Messenger\MessageBusInterface;
 use XTags\Domain\Model\Vocabularies\VocabulariesCollection;
-use XTags\Domain\Model\Vocabularies\VocabulariesRepository;
 use XTags\Domain\Service\Vocabularies\AllVocabulariesFinder;
 
 class GetAllVocabulariesHandler

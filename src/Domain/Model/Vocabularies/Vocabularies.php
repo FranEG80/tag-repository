@@ -13,6 +13,7 @@ use XTags\Shared\Domain\Model\ValueObject\Version;
 final class Vocabularies extends DomainModel
 {
     private const MODEL_NAME = 'vocabularies';
+    const CURRENT_VERSION = '1';
 
     private VocabulariesId $id;
     private VocabulariesName $name;
@@ -97,7 +98,6 @@ final class Vocabularies extends DomainModel
     {
         return $this->name;
     }
-
 
     public function url_vocabulary(): Url
     {

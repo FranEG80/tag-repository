@@ -3,16 +3,15 @@ declare(strict_types=1);
 
 namespace XTags\Domain\Model\Tags\Event;
 
-use XTags\Domain\Model\ResourceTags\ValueObject\ResourceTagId;
-use XTags\Domain\Model\Tags\ValueObject\TagId;
 use XTags\Shared\Domain\Model\ValueObject\Uuid;
 use XTags\Infrastructure\Message\Generator\Tags\TagsEvent;
 use PcComponentes\Ddd\Domain\Model\DomainEvent;
 use PcComponentes\Ddd\Domain\Model\ValueObject\DateTimeValueObject;
-use XTags\Domain\Model\TagLabel\ValueObject\TagLabelId;
-use XTags\Domain\Model\TagLabel\ValueObject\TagName;
+use XTags\Domain\Model\Tags\ValueObject\TagName;
+use XTags\Domain\Model\Tags\ValueObject\TagId;
 use XTags\Domain\Model\Types\ValueObject\TypesId;
 use XTags\Domain\Model\Vocabularies\ValueObject\VocabulariesId;
+use XTags\Domain\Model\ResourceTags\ValueObject\ResourceTagId;
 use XTags\Shared\Domain\Model\ValueObject\DateTimeInmutable;
 use XTags\Shared\Domain\Model\ValueObject\Version;
 
@@ -21,12 +20,18 @@ final class TagWasCreated extends DomainEvent
     private const NAME = 'was_created';
     private const VERSION = '1';
 
-    private string $name;
+    private $id;    
+    private $customName;
+    private $resourceId;
+    private $vocabularyId;
+    private $typeId;
+    private $createdAt;
+    private $updatedAt;
+    private $version;
 
     public static function from(
         TagId $id,
         TagName $customName,
-        TagLabelId $tagLabelId,
         ResourceTagId $resourceId,
         VocabulariesId $vocabularyId,
         TypesId $typeId,
@@ -39,7 +44,7 @@ final class TagWasCreated extends DomainEvent
             Uuid::v4(),
             $id,
             new DateTimeValueObject(),
-            self::buildPayload( $id, $customName, $tagLabelId, $resourceId, $vocabularyId, $typeId, $createdAt, $updatedAt, $version),
+            self::buildPayload( $id, $customName, $resourceId, $vocabularyId, $typeId, $createdAt, $updatedAt, $version),
         );
     }
 
@@ -75,7 +80,12 @@ final class TagWasCreated extends DomainEvent
 
     public function updatedAt(): DateTimeInmutable
     {
-        return $this->createdAt;
+        return $this->updatedAt;
+    }
+
+    public function version(): DateTimeInmutable
+    {
+        return $this->version;
     }
 
     public static function messageName(): string
@@ -95,7 +105,6 @@ final class TagWasCreated extends DomainEvent
         $this->name = $payload['name'];
         $this->id = $payload['id']; 
         $this->customName = $payload['customName'];
-        $this->tagLabelId = $payload['tagLabelId'];
         $this->resourceId = $payload['resourceId']; 
         $this->vocabularyId = $payload['vocabularyId']; 
         $this->typeId = $payload['typeId']; 
@@ -107,7 +116,6 @@ final class TagWasCreated extends DomainEvent
     private static function buildPayload(
         TagId $id,
         TagName $customName,
-        TagLabelId $tagLabelId,
         ResourceTagId $resourceId,
         VocabulariesId $vocabularyId,
         TypesId $typeId,
@@ -120,7 +128,6 @@ final class TagWasCreated extends DomainEvent
             \json_encode([
                 'id' => $id, 
                 'customName' => $customName,
-                'tag_label_id' => $tagLabelId,
                 'resource_id' => $resourceId, 
                 'vocabulary_id' => $vocabularyId, 
                 'type_id' => $typeId, 

@@ -1,5 +1,5 @@
 resouce_tags.get:
-  path: /{id?}
+  path: /{id?}{v?}
   methods: [GET]
   controller: XTags\Infrastructure\Entrypoint\Controller\ResourceTagsController\Get\GetResourceTagsController
 

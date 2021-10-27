@@ -2,13 +2,13 @@
 
 namespace XTags\App\Entity;
 
-use XTags\App\Repository\LanguagesRepository;
+use XTags\App\Repository\LanguageRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=LanguagesRepository::class)
+ * @ORM\Entity(repositoryClass=LanguageRepository::class)
  */
-class Languages
+class Language
 {
     /**
      * @ORM\Id
@@ -18,13 +18,10 @@ class Languages
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=5)
+     * @ORM\Column(type="string", length=10)
      */
     private $name;
-    
-    public function __construct()
-    {
-    }
+
 
     public function getId(): ?int
     {

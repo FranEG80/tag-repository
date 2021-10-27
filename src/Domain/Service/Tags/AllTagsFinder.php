@@ -1,15 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace XTags\Domain\Service\Types;
+namespace XTags\Domain\Service\Tags;
 
 use XTags\Domain\Model\Types\Types;
 use XTags\Domain\Model\Types\TypesCollection;
 use XTags\Domain\Model\Types\TypesRepository;
 use XTags\Domain\Model\Types\Exception\TypesDoesNotExistException;
-use XTags\Infrastructure\Exceptions\Api\TypesResource;
+use XTags\Infrastructure\Exceptions\Api\TypesResources;
 
-class AllTypesFinder
+class AllTagsFinder
 {
     private TypesRepository $tagsRepository;
 
@@ -23,7 +23,7 @@ class AllTypesFinder
         $tags = $this->tagsRepository->findAll();
 
         if (null === $tags) {
-            throw new TypesDoesNotExistException(TypesResource::create());
+            throw new TypesDoesNotExistException(TypesResources::create());
         }
 
         return $tags;

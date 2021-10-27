@@ -8,7 +8,8 @@ services:
   XTags\Infrastructure\Domain\Model\ResourceTags\DoctrineResourceTagsRepository:
     class: XTags\Infrastructure\Domain\Model\ResourceTags\DoctrineResourceTagsRepository
     arguments:
-      $doctrineRepository: '@XTags\App\Repository\ResourceTagsRepository'
+      $doctrineRepository: '@XTags\App\Repository\ResourceRepository'
+      $tagRepository: '@XTags\App\Repository\TagRepository'
 
   XTags\Domain\Model\ResourceTags\ResourceTagsRepository:
       alias: XTags\Infrastructure\Domain\Model\ResourceTags\DoctrineResourceTagsRepository
@@ -17,7 +18,7 @@ services:
   XTags\Infrastructure\Domain\Model\Types\DoctrineTypesRepository:
     class: XTags\Infrastructure\Domain\Model\Types\DoctrineTypesRepository
     arguments:
-      $doctrineRepository: '@XTags\App\Repository\TypesRepository'
+      $doctrineRepository: '@XTags\App\Repository\TypeRepository'
 
   XTags\Domain\Model\Types\TypesRepository:
       alias: XTags\Infrastructure\Domain\Model\Types\DoctrineTypesRepository
@@ -26,7 +27,11 @@ services:
   XTags\Infrastructure\Domain\Model\Tags\DoctrineTagsRepository:
     class: XTags\Infrastructure\Domain\Model\Tags\DoctrineTagsRepository
     arguments:
-      $doctrineRepository: '@XTags\App\Repository\TagsRepository'
+      $doctrineRepository: '@XTags\App\Repository\TagRepository'
+      $resourceDomainRepository: '@XTags\App\Repository\DoctrineResourceRespository'
+      $tagLabelRepository: '@XTags\App\Repository\DoctrineLabelRespository'
+      $typesRepository: '@XTags\App\Repository\DoctrinTypeRepository'
+      $vocabularyRepository: '@XTags\App\Repository\DoctrineVocabularyRepository'
 
   XTags\Domain\Model\Tags\TagsRepository:
       alias: XTags\Infrastructure\Domain\Model\Tags\DoctrineTagsRepository
@@ -35,7 +40,7 @@ services:
   XTags\Infrastructure\Domain\Model\TagLabel\DoctrineTagLabelRepository:
     class: XTags\Infrastructure\Domain\Model\TagLabel\DoctrineTagLabelRepository
     arguments:
-      $doctrineRepository: '@XTags\App\Repository\TagLabelRepository'
+      $doctrineRepository: '@XTags\App\Repository\LabelRepository'
 
   XTags\Domain\Model\TagLabel\TagLabelRepository:
       alias: XTags\Infrastructure\Domain\Model\TagLabel\DoctrineTagLabelRepository
@@ -44,7 +49,7 @@ services:
   XTags\Infrastructure\Domain\Model\Vocabularies\DoctrineVocabulariesRespository:
     class: XTags\Infrastructure\Domain\Model\Vocabularies\DoctrineVocabulariesRespository
     arguments:
-      $doctrineRepository: '@XTags\App\Repository\VocabulariesRepository'
+      $doctrineRepository: '@XTags\App\Repository\VocabularyRepository'
 
   XTags\Domain\Model\Vocabularies\VocabulariesRepository:
       alias: XTags\Infrastructure\Domain\Model\Vocabularies\DoctrineVocabulariesRespository
