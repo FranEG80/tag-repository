@@ -4,10 +4,8 @@ declare(strict_types=1);
 namespace XTags\Application\Query\ResourceTags\GetByIdResourceTag;
 
 use Symfony\Component\Messenger\MessageBusInterface;
-use XTags\Domain\Model\ResourceTags\ResourceTagsCollection;
+use XTags\Domain\Model\ResourceTags\ResourceTags;
 use XTags\Domain\Service\Resource\ByIdResourceFinder;
-use XTags\Domain\Service\ResourceTags\AllResourceTagsFinder;
-use XTags\Shared\Domain\Model\ValueObject\Version;
 
 class GetByIdResourceTagHandler
 {
@@ -22,13 +20,8 @@ class GetByIdResourceTagHandler
         $this->getResourceById = $getResourceById;
     }
 
-    /**
-     * @return ResourceTagsCollection
-     */
-    public function __invoke(GetByIdResourceTagQuery $query)
+    public function __invoke(GetByIdResourceTagQuery $query): ?ResourceTags
     {
-        $tagLabel = [];
-        $tagLabel[] = ($this->getResourceById)($query->resourceId(), $query->version());
-        return $tagLabel;
+        return ($this->getResourceById)($query->resourceId(), $query->version());
     }
 }

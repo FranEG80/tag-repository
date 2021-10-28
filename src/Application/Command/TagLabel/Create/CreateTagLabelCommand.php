@@ -5,33 +5,41 @@ namespace XTags\Application\Command\TagLabel\Create;
 
 use Assert\Assert;
 use PcComponentes\Ddd\Application\Command;
+use XTags\Domain\Model\Definition\ValueObject\DefinitionId;
 use XTags\Domain\Model\Languages\ValueObject\LanguagesId;
+use XTags\Domain\Model\TagLabel\ValueObject\LabelName;
 use XTags\Domain\Model\TagLabel\ValueObject\TagName;
 use XTags\Domain\Model\Tags\ValueObject\TagId;
+use XTags\Domain\Model\Vocabularies\ValueObject\VocabulariesId;
 use XTags\Infrastructure\Message\Generator\TagLabel\TagLabelCommand;
 use XTags\Shared\Domain\Model\ValueObject\Uuid;
+use XTags\Shared\Domain\Model\ValueObject\Version;
 
 class CreateTagLabelCommand extends Command
 {
     private const NAME = 'create_tag_label';
     private const VERSION = '1';
 
-    private TagId $tagId;
     private LanguagesId $langId;
-    private TagName $name;
+    private VocabulariesId $vocabularyId;
+    private DefinitionId $definitionId;
+    private Version $version;
+    private LabelName $name;
 
-    public static function create( $tagId, $langId, $name):self
+    public static function create($langId, $vocabularyId, $definitionId, $name, $version):self
     {
         return self::fromPayload(Uuid::v4(), [
-            'tagId' => $tagId,
             'langId' => $langId,
+            'vocabularyId' => $vocabularyId,
+            'definitionId' => $definitionId,
             'name' => $name,
+            'version' => $version,
         ]);
     }
 
-    public function tagId(): TagId
+    public function vocabularyId(): VocabulariesId
     {
-        return $this->tagId;
+        return $this->vocabularyId;
     }
 
     public function langId(): LanguagesId
@@ -39,9 +47,19 @@ class CreateTagLabelCommand extends Command
         return $this->langId;
     }
 
-    public function name(): TagName
+    public function name(): LabelName
     {
         return $this->name;
+    }
+
+    public function version(): Version
+    {
+        return $this->version;
+    }
+
+    public function definitionId(): DefinitionId
+    {
+        return $this->definitionId;
     }
 
     public static function messageName(): string
@@ -58,15 +76,17 @@ class CreateTagLabelCommand extends Command
     {
         $payload = $this->messagePayload();
 
-        Assert::lazy()
-            ->that($payload['tagId'], 'tagId')->uuid()
-            ->that($payload['langId'], 'langId')->integer()
-            ->that($payload['name'], 'name')->string()
-            ->verifyNow()
-        ;
+        // Assert::lazy()
+        //     ->that($payload['tagId'], 'tagId')->uuid()
+        //     ->that($payload['langId'], 'langId')->integer()
+        //     ->that($payload['name'], 'name')->string()
+        //     ->verifyNow()
+        // ;
 
-        $this->tagId = TagId::from($payload['tagId']);
         $this->langId = LanguagesId::from($payload['langId']);        
-        $this->langId = TagName::from($payload['name']);        
+        $this->vocabularyId = VocabulariesId::from($payload['vocabularyId']);        
+        $this->definitionId = DefinitionId::from($payload['definitionId']);        
+        $this->name = LabelName::from($payload['name']);        
+        $this->version = Version::from($payload['version']);        
     }
 }

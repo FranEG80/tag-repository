@@ -28,13 +28,5 @@ class GetAllLanguagesQuery extends Query
 
     protected function assertPayload(): void
     {
-        $payload = $this->messagePayload();
-        
-        // $this->vocabulary = $payload['id'];
     }
-
-    // public function id(): LanguagesId
-    // {
-    //     return $this->id;
-    // }
 }

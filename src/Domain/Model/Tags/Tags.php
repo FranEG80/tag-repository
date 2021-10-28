@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace XTags\Domain\Model\Tags;
 
+use XTags\Domain\Model\Definition\ValueObject\DefinitionId;
 use XTags\Domain\Model\ResourceTags\ValueObject\ResourceTagId;
 use XTags\Domain\Model\Tags\ValueObject\TagName;
 use XTags\Domain\Model\Tags\Event\TagWasCreated;
@@ -19,10 +20,11 @@ final class Tags extends DomainModel
     const CURRENT_VERSION_TAG = '1';
 
     private TagId $id;
-    private TagName $customName;
-    private ResourceTagId $resourceId;
     private VocabulariesId $vocabularyId;
     private TypesId $typeId;
+    private DefinitionId $defintionId;
+    private ResourceTagId $resourceId;
+    private TagName $customName;
     private DateTimeInmutable $createdAt;
     private DateTimeInmutable $updatedAt;
     private Version $version;
@@ -30,6 +32,7 @@ final class Tags extends DomainModel
     private function __construct(
         TagId $id,
         TagName $customName,
+        DefinitionId $definitionId,
         ResourceTagId $resourceId,
         VocabulariesId $vocabularyId,
         TypesId $typeId,
@@ -40,6 +43,7 @@ final class Tags extends DomainModel
     {
         $this->id = $id;
         $this->customName = $customName;
+        $this->defintionId = $definitionId;
         $this->resourceId = $resourceId;
         $this->vocabularyId = $vocabularyId;
         $this->typeId = $typeId;
@@ -59,6 +63,7 @@ final class Tags extends DomainModel
     public static function create(
         TagId $id,
         TagName $customName,
+        DefinitionId $definitionId,
         ResourceTagId $resourceId,
         VocabulariesId $vocabularyId,
         TypesId $typeId
@@ -67,7 +72,8 @@ final class Tags extends DomainModel
         $dateNow = new DateTimeInmutable();
         $instance = new self(
             $id, 
-            $customName, 
+            $customName,
+            $definitionId,
             $resourceId, 
             $vocabularyId, 
             $typeId, 
@@ -79,6 +85,7 @@ final class Tags extends DomainModel
         $instance->recordThat(TagWasCreated::from(
             $instance->id(), 
             $instance->customName(),
+            $instance->definitionId(),
             $instance->resourceId(),
             $instance->vocabularyId(),
             $instance->typeId(),
@@ -96,6 +103,7 @@ final class Tags extends DomainModel
     public static function from(
         TagId $id,
         TagName $customName,
+        DefinitionId $definitionId,
         ResourceTagId $resourceId,
         VocabulariesId $vocabularyId,
         TypesId $typeId,
@@ -104,7 +112,7 @@ final class Tags extends DomainModel
         Version $version
     ): self
     {
-        return new self($id, $customName, $resourceId, $vocabularyId, $typeId, $createdAt, $updatedAt, $version);
+        return new self($id, $customName, $definitionId, $resourceId, $vocabularyId, $typeId, $createdAt, $updatedAt, $version);
     }
 
     public function id(): TagId
@@ -147,11 +155,17 @@ final class Tags extends DomainModel
         return $this->version;
     }
 
+    public function definitionId()
+    {
+        return $this->defintionId;
+    }
+
     public function jsonSerialize()
     {
         return [
             'id' => $this->id,
             'tag_mame' => $this->customName,
+            'definition_id' => $this->defintionId,
             'resource_tag_id' => $this->resourceId,
             'vocabularies_id' => $this->vocabularyId,
             'types_id' => $this->typeId,

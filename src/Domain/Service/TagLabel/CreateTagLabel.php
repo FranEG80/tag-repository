@@ -3,19 +3,17 @@ declare(strict_types=1);
 
 namespace XTags\Domain\Service\TagLabel;
 
+use XTags\Domain\Model\Definition\ValueObject\DefinitionId;
 use XTags\Domain\Model\Languages\ValueObject\LanguagesId;
-use XTags\Domain\Model\ResourceTags\ValueObject\ResourceTagId;
 use XTags\Domain\Model\TagLabel\Exception\TagLabelAlreadyExistException;
 use XTags\Domain\Model\TagLabel\TagLabel;
 use XTags\Domain\Model\TagLabel\TagLabelRepository;
-use XTags\Domain\Model\TagLabel\ValueObject\TagLabelId;
-use XTags\Domain\Model\TagLabel\ValueObject\TagLabelName;
-use XTags\Domain\Model\TagLabel\ValueObject\TagName;
+use XTags\Domain\Model\TagLabel\ValueObject\LabelName;
 use XTags\Domain\Model\Tags\ValueObject\TagId;
-use XTags\Domain\Model\Types\ValueObject\TypesId;
 use XTags\Domain\Model\Vocabularies\ValueObject\VocabulariesId;
 use XTags\Infrastructure\Domain\Model\TagLabel\DoctrineTagLabelRepository;
 use XTags\Infrastructure\Exceptions\Api\TagLabelResources;
+use XTags\Shared\Domain\Model\ValueObject\Version;
 
 class CreateTagLabel
 {
@@ -27,14 +25,16 @@ class CreateTagLabel
     }
 
     public function __invoke(
-        TagId $tagId,
         LanguagesId $languageId,
-        TagLabelName $name
+        VocabulariesId $vocabulariesId, 
+        DefinitionId $definitionId,       
+        LabelName $labelName,
+        Version $version  
     ): TagLabel
     {
-        $this->assertTagDoesNotExists($tagId, $languageId);
+        $this->assertTagDoesNotExists($definitionId, $languageId, $vocabulariesId, $version);
 
-        $tag = TagLabel::create( $tagId, $name, $languageId );
+        $tag = TagLabel::create( TagId::v4(), $labelName, $languageId, $definitionId, $vocabulariesId );
 
         $this->repository->save($tag);
 
@@ -42,13 +42,14 @@ class CreateTagLabel
         
     }
 
-    public function assertTagDoesNotExists(TagId $tagId, LanguagesId $languagesId): void
+    public function assertTagDoesNotExists(DefinitionId $definitionId, LanguagesId $languagesId, VocabulariesId $vocabulariesId, Version $version): void
     {
         $tagLabels = $this->repository->findBy(
             [
-                'tags_id' => $tagId,
-                'lang_id' => $languagesId,
-                'version' => TagLabel::CURRENT_VERSION_TAG_LABEL
+                'definitionId' => $definitionId ? $definitionId->value() : null,
+                'lang_id' => $languagesId ? $languagesId->value() : null,
+                'version' => $version ? $version->value() : TagLabel::CURRENT_VERSION_TAG_LABEL,
+                'vocabulary' => $vocabulariesId ? $vocabulariesId->value() : null
             ],
             ['name' => 'ASC']
         );

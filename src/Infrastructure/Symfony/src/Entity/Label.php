@@ -44,10 +44,6 @@ class Label
      */
     private $updated_at;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=Tag::class, inversedBy="labels")
-     */
-    private $definition_id;
 
     /**
      * @ORM\ManyToOne(targetEntity=Vocabulary::class)
@@ -55,9 +51,14 @@ class Label
      */
     private $vocabulary;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Definition::class, inversedBy="labels")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $definition;
+
     public function __construct()
     {
-        $this->definition_id = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -125,30 +126,6 @@ class Label
         return $this;
     }
 
-    /**
-     * @return Collection|Tag[]
-     */
-    public function getDefinitionId(): Collection
-    {
-        return $this->definition_id;
-    }
-
-    public function addDefinitionId(Tag $definitionId): self
-    {
-        if (!$this->definition_id->contains($definitionId)) {
-            $this->definition_id[] = $definitionId;
-        }
-
-        return $this;
-    }
-
-    public function removeDefinitionId(Tag $definitionId): self
-    {
-        $this->definition_id->removeElement($definitionId);
-
-        return $this;
-    }
-
     public function getVocabulary(): ?Vocabulary
     {
         return $this->vocabulary;
@@ -157,6 +134,18 @@ class Label
     public function setVocabulary(?Vocabulary $vocabulary): self
     {
         $this->vocabulary = $vocabulary;
+
+        return $this;
+    }
+
+    public function getDefinition(): ?Definition
+    {
+        return $this->definition;
+    }
+
+    public function setDefinition(?Definition $definition): self
+    {
+        $this->definition = $definition;
 
         return $this;
     }

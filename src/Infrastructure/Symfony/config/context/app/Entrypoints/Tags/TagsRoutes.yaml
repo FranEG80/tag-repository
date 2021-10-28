@@ -3,13 +3,8 @@ tags_search.get:
   methods: [GET]
   controller: XTags\Infrastructure\Entrypoint\Controller\TagsController\Search\GetSearchTagsController
 
-tags.post:
-  path: /
-  methods: [POST]
-  controller: XTags\Infrastructure\Entrypoint\Controller\TagsController\Create\CreateTagsController
-
 tags.default:
   path: /
-  methods: [PUT, DELETE, PATCH, GET]
+  methods: [PUT, DELETE, PATCH, GET, POST]
   controller: XTags\Infrastructure\Entrypoint\Controller\NotImplementedController\NotImplementedController
 

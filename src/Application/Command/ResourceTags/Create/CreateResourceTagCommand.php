@@ -5,33 +5,33 @@ namespace XTags\Application\Command\ResourceTags\Create;
 
 use Assert\Assert;
 use PcComponentes\Ddd\Application\Command;
-use XTags\Domain\Model\ResourceTags\ValueObject\ResourceTagId;
-use XTags\Domain\Model\Tags\ValueObject\TagId;
+use XTags\Domain\Model\ResourceTags\ValueObject\ExternalResourceId;
 use XTags\Infrastructure\Message\Generator\Tags\TagsCommand;
 use XTags\Shared\Domain\Model\ValueObject\Uuid;
+use XTags\Shared\Domain\Model\ValueObject\Version;
 
 class CreateResourceTagCommand extends Command
 {
     private const NAME = 'create_resource_tag';
     private const VERSION = '1';
 
-    private TagId $tagId;
-    private ResourceTagId $resourceId;
+    private ?Version $version;
+    private ExternalResourceId $resourceId;
 
-    public static function create($resourceId, $tagId):self
+    public static function create($resourceId, $version):self
     {
         return self::fromPayload(Uuid::v4(), [
-            'tagId' => $tagId,
             'resourceId' => $resourceId,
+            'version' => $version
         ]);
     }
 
-    public function tagId(): TagId
+    public function version(): ?Version
     {
-        return $this->tagId;
+        return $this->version;
     }
 
-    public function resourceId(): ResourceTagId
+    public function resourceId(): ExternalResourceId
     {
         return $this->resourceId;
     }
@@ -51,12 +51,12 @@ class CreateResourceTagCommand extends Command
         $payload = $this->messagePayload();
 
         Assert::lazy()
-            ->that($payload['tagId'], 'tagId')->uuid()
+            ->that($payload['version'], 'version')->nullOr()->string()
             ->that($payload['resourceId'], 'resourceId')->uuid()
             ->verifyNow()
         ;
 
-        $this->tagId = TagId::from($payload['tagId']);
-        $this->resourceId = ResourceTagId::from($payload['resourceId']);        
+        $this->version = $payload['version'] ? Version::from($payload['version']) : null;
+        $this->resourceId = ExternalResourceId::from($payload['resourceId']);        
     }
 }

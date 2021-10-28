@@ -59,16 +59,16 @@ final class ResourceTagWasCreated extends DomainEvent
     {
         $payload = $this->messagePayload();
 
-        $this->id = $payload['id'];
-        $this->resourceId = $payload['resourceId'];
-        $this->version = $payload['version'];
+        $this->id = ResourceTagId::from($payload['id']);
+        $this->resourceId = ExternalResourceId::from($payload['resourceId']);
+        $this->version = $payload['version'] ? Version::from($payload['version']) : null;
     }
 
     private static function buildPayload(ResourceTagId $id, ExternalResourceId $resourceId): array
     {
         return \json_decode(
             \json_encode([
-                'id' => $id->value(),
+                'id' => $id,
                 'external_resource_id' => $resourceId
             ]),
             true,

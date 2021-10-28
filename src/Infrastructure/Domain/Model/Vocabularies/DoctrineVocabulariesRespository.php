@@ -3,40 +3,39 @@ declare(strict_types=1);
 
 namespace XTags\Infrastructure\Domain\Model\Vocabularies;
 
+use Doctrine\ORM\EntityManagerInterface;
 use XTags\App\Entity\EntityManager;
 use XTags\App\Entity\Vocabulary as DoctrineEntity;
 use XTags\App\Repository\VocabularyRepository as DoctrineRepository;
 use XTags\Domain\Model\Vocabularies\ValueObject\VocabulariesId;
 use XTags\Domain\Model\Vocabularies\ValueObject\VocabulariesName;
-use Xtags\Domain\Model\Vocabularies\{
-    Vocabularies as DomainModel,
-    VocabulariesCollection as DomainCollection,
-    VocabulariesRepository as DomainRepository
-};
+use Xtags\Domain\Model\Vocabularies\Vocabularies as DomainModel;
+use XTags\Domain\Model\Vocabularies\VocabulariesCollection;
+use Xtags\Domain\Model\Vocabularies\VocabulariesRepository as DomainRepository;
 use XTags\Shared\Application\Service\GuzzleClient;
 use XTags\Shared\Domain\Model\ValueObject\DateTimeInmutable;
-use XTags\Shared\Domain\Model\ValueObject\Id;
 use XTags\Shared\Domain\Model\ValueObject\Url;
 use XTags\Shared\Domain\Model\ValueObject\Version;
-
 final class DoctrineVocabulariesRespository extends EntityManager  implements DomainRepository
 {
     protected $doctrineRepository;
+    protected $em;
 
-    public function __construct(DoctrineRepository $doctrineRepository )
+    public function __construct(DoctrineRepository $doctrineRepository, EntityManagerInterface $em)
     {
         $this->doctrineRepository = $doctrineRepository;
+        $this->em = $em;
     }
 
     public function save(DomainModel $vocabulary): void 
     {
         $vocabularyEntity = $this->modelToEntity($vocabulary, new DoctrineEntity());
-        $this->saveEntity($vocabularyEntity);
+        $this->saveEntity($vocabularyEntity, $this->em);
     }
 
-    public function find(Id $id): DomainModel
+    public function find(VocabulariesId $id): DomainModel
     {
-        $vocabulary = $this->doctrineRepository->find($id);
+        $vocabulary = $this->doctrineRepository->find($id->value());
         
         return $this->entityToModel($vocabulary);
     }
@@ -50,10 +49,12 @@ final class DoctrineVocabulariesRespository extends EntityManager  implements Do
 
         $vocabulary = $this->doctrineRepository->findOneBy($criteria);
 
+        if (null === $vocabulary) return null;
+
         return $this->entityToModel($vocabulary);
     }
 
-    public function findAll(): DomainCollection 
+    public function findAll(): VocabulariesCollection
     {
         $collection = [];
         $vocabularies = $this->doctrineRepository->findAll();
@@ -61,14 +62,10 @@ final class DoctrineVocabulariesRespository extends EntityManager  implements Do
         foreach ($vocabularies as $vocabulary) {
             $collection[] = $this->entityToModel($vocabulary);
         }
-        $vocabulariesCollection = DomainCollection::from($collection);
+        $vocabulariesCollection = VocabulariesCollection::from($collection);
         return $vocabulariesCollection;
     }
-// TODO **************************************************************************
-// TODO **************************************************************************
-// TODO CHANGE TO SERVICES
-// TODO **************************************************************************
-// TODO **************************************************************************
+    
     public function searchQuery(string $vocabulary, string $mode, string $query, string $langsearch, string $langlabel, bool $suggestions, $tag_id): array
     {
         $output = [];
@@ -105,12 +102,6 @@ final class DoctrineVocabulariesRespository extends EntityManager  implements Do
         return $output;        
     }
 
-// TODO **************************************************************************
-// TODO **************************************************************************
-// TODO **************************************************************************
-// TODO **************************************************************************
-
-
     public function modelToEntity(DomainModel $vocabularyModel, DoctrineEntity $vocabularyEntity): DoctrineEntity
     {
         $vocabularyEntity->setName($vocabularyModel->name()->value());
@@ -121,20 +112,7 @@ final class DoctrineVocabulariesRespository extends EntityManager  implements Do
         $vocabularyEntity->setUpdatedAt($vocabularyModel->update_at());
         $vocabularyEntity->setVersion((string) $vocabularyModel->version()->value());
 
-
-    
-        // TODO **************************************************************************
-        // TODO **************************************************************************
         // TODO add semanticSchema[] to entity
-        // TODO **************************************************************************
-        // TODO **************************************************************************
-        // $vocabularyEntity->addSemanticSchema([]);
-
-        // TODO **************************************************************************
-        // TODO **************************************************************************
-        // TODO **************************************************************************
-        // TODO **************************************************************************
-
 
         return $vocabularyEntity;
     }
@@ -150,18 +128,8 @@ final class DoctrineVocabulariesRespository extends EntityManager  implements Do
             DateTimeInmutable::fromTimestamp($vocabulary->getCreatedAt()->getTimestamp()), 
             DateTimeInmutable::fromTimestamp($vocabulary->getUpdatedAt()->getTimestamp()), 
             Version::from($vocabulary->getVersion())
-            // TODO **************************************************************************
-            // TODO **************************************************************************
+            
             // TODO add semanticSchema[] to Model
-            // TODO **************************************************************************
-            // TODO **************************************************************************
-            // $vocabularyEntity->addSemanticSchema([]);
-
-            // TODO **************************************************************************
-            // TODO **************************************************************************
-            // TODO **************************************************************************
-            // TODO **************************************************************************
-
         );
 
         return  $vocabularyModel;

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace XTags\Infrastructure\Domain\Model\Types;
 
+use Doctrine\ORM\EntityManagerInterface;
 use XTags\App\Entity\EntityManager;
 use XTags\App\Entity\Type as EntityTypes;
 use XTags\App\Repository\TypeRepository as DoctrineRespository;
@@ -16,16 +17,18 @@ use XTags\Shared\Domain\Model\ValueObject\Id;
 final class DoctrineTypesRepository extends EntityManager implements DomainRepository
 {
     protected $doctrineRepository;
+    protected $em;
 
-    public function __construct(DoctrineRespository $doctrineRepository)
+    public function __construct(DoctrineRespository $doctrineRepository, EntityManagerInterface $em)
     {
         $this->doctrineRepository = $doctrineRepository;
+        $this->em = $em;
     }
 
     public function save(DomainModel $types): void 
     {
         $typesEntity = $this->modelToEntity($types, new EntityTypes());
-        $this->saveEntity($typesEntity);
+        $this->saveEntity($typesEntity, $this->em);
     }
 
     public function find(Id $id): DomainModel

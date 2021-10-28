@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace XTags\Infrastructure\Domain\Model\Languages;
 
+use Doctrine\ORM\EntityManagerInterface;
 use XTags\App\Entity\EntityManager;
 use XTags\App\Entity\Language as DoctrineEntity;
 use XTags\App\Repository\LanguageRepository as DoctrineRespository;
@@ -11,26 +12,36 @@ use XTags\Domain\Model\Languages\ValueObject\LanguagesName;
 use Xtags\Domain\Model\Languages\Languages as DomainModel;
 use XTags\Domain\Model\Languages\LanguagesCollection as DomainCollection;
 use XTags\Domain\Model\Languages\LanguagesRepository as DomainRepository;
-use XTags\Shared\Domain\Model\ValueObject\Id;
 
 final class DoctrineLanguagesRespository extends EntityManager implements DomainRepository
 {
     protected $doctrineRepository;
+    protected EntityManagerInterface $em;
 
-    public function __construct(DoctrineRespository $doctrineRepository)
+    public function __construct(DoctrineRespository $doctrineRepository, EntityManagerInterface $em)
     {
         $this->doctrineRepository = $doctrineRepository;
+        $this->em = $em;
     }
 
     public function save(DomainModel $language): void 
     {
         $languageEntity = $this->modelToEntity($language, new DoctrineEntity());
-        $this->saveEntity($languageEntity);
+        $this->saveEntity($languageEntity, $this->em);
     }
 
-    public function find(Id $id): DomainModel
+    public function find(LanguagesId $id): ?DomainModel
     {
-        $language = $this->doctrineRepository->find($id);
+        $language = $this->doctrineRepository->find($id->value());
+        
+        if ($language) $language = $this->entityToModel($language);
+
+        return $language;
+    }
+
+    public function findByName($name): ?DomainModel
+    {
+        $language = $this->doctrineRepository->findOneBy($name);
         
         if ($language) $language = $this->entityToModel($language);
 

@@ -5,6 +5,7 @@ namespace XTags\Domain\Model\ResourceTags;
 
 use XTags\Domain\Model\ResourceTags\Event\ResourceTagWasCreated;
 use XTags\Domain\Model\ResourceTags\ValueObject\ExternalResourceId;
+use XTags\Domain\Model\ResourceTags\ValueObject\ExternalSystemId;
 use XTags\Domain\Model\ResourceTags\ValueObject\ResourceTagId;
 use XTags\Shared\Domain\Model\DomainModel;
 use XTags\Shared\Domain\Model\ValueObject\DateTimeInmutable;
@@ -15,22 +16,26 @@ final class ResourceTags extends DomainModel
     private const MODEL_NAME = 'resourceTag';
     const CURRENT_VERSION_RESOURCE_TAG = '1';
 
+    const EXTERNAL_SYSTEM = 0;
+
     private ResourceTagId $id;
     private ExternalResourceId $resourceId;
     private Version $version;
+    private ExternalSystemId $externalSystem;
     private DateTimeInmutable $createdAt;
     private DateTimeInmutable $updatedAt;
 
     private function __construct(
         ResourceTagId $id, 
         ExternalResourceId $resourceId, 
-        Version $version = null, 
+        Version $version = null,
         DateTimeInmutable $createdAt = null, 
         DateTimeInmutable $updatedAt = null
     )
     {
         $this->id = $id;
         $this->resourceId = $resourceId;
+        $this->externalSystem = ExternalSystemId::from(self::EXTERNAL_SYSTEM);
         $this->version = ($version) ? $version : Version::from(self::CURRENT_VERSION_RESOURCE_TAG);
         $this->createdAt = ($createdAt) ? $createdAt : new DateTimeInmutable('now');
         $this->updatedAt = ($updatedAt) ? $createdAt : new DateTimeInmutable('now');
@@ -44,10 +49,11 @@ final class ResourceTags extends DomainModel
     /**
      * Used to create a non previously existent entity. May register events.
      */
-    public static function create(ResourceTagId $id, ExternalResourceId $resourceId ): self
+    public static function create(ExternalResourceId $resourceId, Version $v = null): self
     {
-        $instance = new self( $id, $resourceId, Version::from(self::CURRENT_VERSION_RESOURCE_TAG));
-        $instance->recordThat(ResourceTagWasCreated::from($instance->id(), $instance->resourceId(), $instance->version()));
+        $version = null !== $v ? $v : Version::from(self::CURRENT_VERSION_RESOURCE_TAG);
+        $instance = new self( ResourceTagId::v4(), $resourceId, $version);
+        // $instance->recordThat(ResourceTagWasCreated::from($instance->id(), $instance->resourceId(), $instance->version()));
 
         return $instance;
     }
@@ -80,6 +86,12 @@ final class ResourceTags extends DomainModel
     {
         return $this->version;
     }
+
+    public function externalSystem(): ExternalSystemId
+    {
+        return $this->externalSystem;
+    }
+
 
     public function createdAt(): DateTimeInmutable
     {

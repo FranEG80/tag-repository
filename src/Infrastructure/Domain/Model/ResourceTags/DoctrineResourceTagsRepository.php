@@ -3,18 +3,16 @@ declare(strict_types=1);
 
 namespace XTags\Infrastructure\Domain\Model\ResourceTags;
 
+use Doctrine\ORM\EntityManagerInterface;
 use XTags\App\Entity\Resource as DoctrineEntity;
 use XTags\App\Repository\ResourceRepository as DoctrineRepository;
 use XTags\App\Repository\TagRepository;
 use XTags\Domain\Model\ResourceTags\ValueObject\ResourceTagId;
-use XTags\Domain\Model\ResourceTags\{
-    ResourceTagsCollection as DomainCollection, 
-    ResourceTagsRepository as DomainRepository, 
-    ResourceTags as DomainModel
-};
+use XTags\Domain\Model\ResourceTags\ResourceTagsCollection as DomainCollection;
+use XTags\Domain\Model\ResourceTags\ResourceTagsRepository as DomainRepository;
+use XTags\Domain\Model\ResourceTags\ResourceTags as DomainModel;
 use XTags\App\Entity\EntityManager;
 use XTags\Domain\Model\ResourceTags\ValueObject\ExternalResourceId;
-use XTags\Domain\Model\Tags\ValueObject\TagId;
 use XTags\Shared\Domain\Model\ValueObject\DateTimeInmutable;
 use XTags\Shared\Domain\Model\ValueObject\Version;
 
@@ -22,11 +20,13 @@ final class DoctrineResourceTagsRepository extends EntityManager implements Doma
 {
     private DoctrineRepository $doctrineRepository;
     private TagRepository $tagRepository;
+    private EntityManagerInterface $em;
 
-    public function __construct(DoctrineRepository $doctrineRepository, TagRepository $tagRepository)
+    public function __construct(DoctrineRepository $doctrineRepository, TagRepository $tagRepository, EntityManagerInterface $em)
     {
         $this->doctrineRepository = $doctrineRepository;
         $this->tagRepository = $tagRepository;
+        $this->em = $em;
     }
     
     public function find(ResourceTagId $id): ?DomainModel
@@ -51,7 +51,7 @@ final class DoctrineResourceTagsRepository extends EntityManager implements Doma
     public function save(DomainModel $resource): void 
     {
         $resource = $this->modelToEntity($resource);
-        $this->saveEntity($resource);
+        $this->saveEntity($resource, $this->em);
     }
 
     public function findAll(): DomainCollection
@@ -69,10 +69,11 @@ final class DoctrineResourceTagsRepository extends EntityManager implements Doma
     private function modelToEntity(DomainModel $resourceTagModel): DoctrineEntity
     {
         $entity = new DoctrineEntity();
-        $entity->setExternalId($resourceTagModel->resourceId());
+        $entity->setExternalId($resourceTagModel->resourceId()->value());
         $entity->setVersion($resourceTagModel->version()->value());
         $entity->setCreatedAt($resourceTagModel->createdAt());
         $entity->setUpdatedAt($resourceTagModel->updatedAt());
+        $entity->setExternalSystemId($resourceTagModel->externalSystem()->value());
 
         return $entity;
     }

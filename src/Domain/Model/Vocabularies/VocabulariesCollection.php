@@ -8,7 +8,6 @@ use PcComponentes\Ddd\Domain\Model\ValueObject\CollectionValueObject;
 
 final class VocabulariesCollection extends CollectionValueObject 
 {
-
     private array $addedHashes = [];
 
     public static function from(array $items): self

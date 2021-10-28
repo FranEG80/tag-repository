@@ -2,8 +2,8 @@
 
 namespace XTags\Domain\Model\TagLabel;
 
+use XTags\Domain\Model\Definition\ValueObject\DefinitionId;
 use XTags\Domain\Model\Languages\ValueObject\LanguagesId;
-use XTags\Domain\Model\TagLabel\ValueObject\DefinitionId;
 use XTags\Domain\Model\TagLabel\ValueObject\LabelId;
 use XTags\Domain\Model\TagLabel\ValueObject\LabelName;
 use XTags\Domain\Model\Tags\ValueObject\TagId;
@@ -20,11 +20,11 @@ final class TagLabel extends DomainModel
     private ?LabelId $id;
     private LabelName $name;
     private LanguagesId $langId;
-    private Version $version;
+    private ?Version $version;
     private DefinitionId $definitionId;
     private VocabulariesId $vocabularyId;
-    private DateTimeInmutable $createdAt;
-    private DateTimeInmutable $updatedAt;
+    private ?DateTimeInmutable $createdAt;
+    private ?DateTimeInmutable $updatedAt;
 
     private function __construct(
         LabelId $id = null,
@@ -44,7 +44,7 @@ final class TagLabel extends DomainModel
         $this->vocabularyId = $vocabularyId;
         $this->version = $version ? $version : Version::from(self::CURRENT_VERSION_TAG_LABEL);
         $this->createdAt = $createdAt ? $createdAt : new DateTimeInmutable('now');
-        $this->updatedtAt = $updatedAt ? $updatedAt : new DateTimeInmutable('now');
+        $this->updatedAt = $updatedAt ? $updatedAt : new DateTimeInmutable('now');
     }
 
     public static function modelName(): string

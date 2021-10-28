@@ -22,35 +22,51 @@ class TagRepository extends ServiceEntityRepository
     public function findByIdResource(string $resourceId, $version, $vocabularyId = null, $typeId = null)
     {
         $criteria = [
-            'resource_id' => $resourceId,
+            'resource' => $resourceId,
             'version' => $version
         ];
 
-        if (null !== $vocabularyId) $criteria['vocabulary_id'] = $vocabularyId; 
-        if (null !== $typeId) $criteria['type_id'] = $typeId;
+        if (null !== $vocabularyId) $criteria['vocabulary'] = $vocabularyId; 
+        if (null !== $typeId) $criteria['type'] = $typeId;
 
         return $this->findBy($criteria);
+    }
+
+    public function deleteManyById(array $ids)
+    {
+        $query = $this->createQueryBuilder('t');
+        $query->delete('t')
+            ->where('id in (:ids)')
+            ->setParameter(':ids', array($ids));
+        
+        return $query->getQuery();
     }
 
     // /**
     //  * @return Tag[] Returns an array of Tag objects
     //  */
     /*
-    public function findByExampleField($value)
+    public function findByExampleField(string $resourceId, $version, $vocabularyId = null, $typeId = null)
     {
-        return $this->createQueryBuilder('t')
-            ->andWhere('t.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('t.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        $query = $this->createQueryBuilder('t');
+
+        $query->andWhere('t.version = :version')->setParameter('version', $version);
+        $query->andWhere('t.resource = :resource')->setParameter('resource', $resourceId);
+                
+        if ($vocabularyId) {
+            $query->andWhere('t.vocabulary = :vocabulary')->setParameter('vocabulary', $vocabularyId);
+        }
+
+        if ($typeId) {
+            $query->andWhere('t.type = :type')->setParameter('type', $typeId);
+        }
+
+        return $query->getQuery()->getResult();
     }
     */
 
     /*
-    public function findOneBySomeField($value): ?Tag
+    public function findByIdResource($value): ?Tag
     {
         return $this->createQueryBuilder('t')
             ->andWhere('t.exampleField = :val')

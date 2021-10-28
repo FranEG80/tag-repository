@@ -67,7 +67,7 @@ class Resource
 
     public function setExternalId($external_id): self
     {
-        $this->external_id = $external_id;
+        $this->external_id = Uuid::fromString($external_id);
 
         return $this;
     }

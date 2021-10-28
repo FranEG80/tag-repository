@@ -24,8 +24,6 @@ class GetAllVocabulariesHandler
      */
     public function __invoke(GetAllVocabulariesQuery $query)
     {
-        $vocabularies = [];
-        $vocabularies[] = ($this->allVocabulariesFinder)();
-        return $vocabularies;
+        return ($this->allVocabulariesFinder)();
     }
 }

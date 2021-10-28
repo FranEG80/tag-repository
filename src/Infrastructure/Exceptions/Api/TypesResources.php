@@ -5,7 +5,7 @@ namespace XTags\Infrastructure\Exceptions\Api;
 
 final class TypesResources extends AppResource
 {
-    private const RESOURCE_CODE = 5;
+    private const RESOURCE_CODE = 6;
     private const RESOURCE_NAME = 'types';
 
     public static function create(): self

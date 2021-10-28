@@ -6,7 +6,6 @@ namespace XTags\Application\Query\ResourceTags\GetByIdResourceTag;
 use Assert\Assert;
 use PcComponentes\Ddd\Application\Query;
 use XTags\Domain\Model\ResourceTags\ValueObject\ExternalResourceId;
-use XTags\Domain\Model\ResourceTags\ValueObject\ResourceTagId;
 use XTags\Infrastructure\Message\Generator\ResourceTags\ResourceTagsQuery;
 use XTags\Shared\Domain\Model\ValueObject\Uuid;
 use XTags\Shared\Domain\Model\ValueObject\Version;

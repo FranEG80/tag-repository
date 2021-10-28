@@ -5,8 +5,6 @@ namespace XTags\Application\Command\ResourceTags\Create;
 
 use Symfony\Component\Messenger\MessageBusInterface;
 use XTags\Domain\Model\ResourceTags\ResourceTags;
-use XTags\Domain\Model\ResourceTags\ValueObject\ResourceTagId;
-use XTags\Domain\Model\Tags\ValueObject\TagId;
 use XTags\Domain\Service\ResourceTags\CreateResourceTag;
 use XTags\Shared\Traits\EventDispatchingTrait;
 
@@ -14,7 +12,7 @@ class CreateResourceTagHandler
 {
     use EventDispatchingTrait;
 
-    private CreateResourceTagCommand $create;
+    private CreateResourceTag $create;
 
     public function __construct(CreateResourceTag $create, MessageBusInterface $eventBus)
     {
@@ -26,7 +24,7 @@ class CreateResourceTagHandler
     {
         $resourceTag = ($this->create)(
             $command->resourceId(),
-            TagId::v4()
+            $command->version()
         );
 
         $this->dispatchEvents($resourceTag);

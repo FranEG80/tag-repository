@@ -5,7 +5,6 @@ namespace XTags\Application\Command\TagLabel\Create;
 
 use Symfony\Component\Messenger\MessageBusInterface;
 use XTags\Domain\Model\TagLabel\TagLabel;
-use XTags\Domain\Model\TagLabel\ValueObject\TagLabelId;
 use XTags\Domain\Service\TagLabel\CreateTagLabel;
 use XTags\Shared\Traits\EventDispatchingTrait;
 
@@ -27,9 +26,11 @@ class CreateTagLabelHandler
     public function __invoke(CreateTagLabelCommand $command): TagLabel
     {
         $tagLabel = ($this->create)(
-            $command->tagId(),
-            $command->langId(),
-            $command->name(),
+            $command->langId(),        
+            $command->vocabularyId(),        
+            $command->definitionId(),        
+            $command->name(),        
+            $command->version(),  
         );
 
         $this->dispatchEvents($tagLabel);

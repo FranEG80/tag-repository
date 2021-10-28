@@ -5,7 +5,6 @@ namespace XTags\Application\Command\Tags\Create;
 
 use Symfony\Component\Messenger\MessageBusInterface;
 use XTags\Domain\Model\Tags\Tags;
-use XTags\Domain\Model\Tags\ValueObject\TagId;
 use XTags\Domain\Service\Tags\CreateTags;
 use XTags\Shared\Traits\EventDispatchingTrait;
 
@@ -26,15 +25,12 @@ class CreateTagHandler
 
     public function __invoke(CreateTagCommand $command): Tags
     {
-        $uuid = TagId::v4();
-
         $tag = ($this->create)(
-            $uuid,
-            $command->customName(),
-            $command->resourceId(),
-            $command->vocabularyId(),
-            $command->langId(),
-            $command->typeId(),
+            $command->langId(),        
+            $command->vocabularyId(),        
+            $command->definitionId(),        
+            $command->name(),        
+            $command->version(),  
         );
 
         $this->dispatchEvents($tag);

@@ -44,7 +44,7 @@ class GetByIdVocabularyQuery extends Query
         $payload = $this->messagePayload();
 
         Assert::lazy()
-            ->that($payload['id'], 'id')->string()
+            ->that($payload['id'], 'id')->integer()
             ->verifyNow()
         ;
 

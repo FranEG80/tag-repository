@@ -13,5 +13,8 @@ interface TagLabelRepository
 
     public function findBy(array $criteria, array $opts): TagLabelCollection;
 
+    public function findOneBy(array $criteria, array $opts): ?TagLabel;
+
     public function findAll(): TagLabelCollection;
+
 }

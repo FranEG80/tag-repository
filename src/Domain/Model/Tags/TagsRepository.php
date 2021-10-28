@@ -3,7 +3,11 @@ declare(strict_types=1);
 
 namespace XTags\Domain\Model\Tags;
 
+use XTags\Domain\Model\ResourceTags\ValueObject\ResourceTagId;
 use XTags\Domain\Model\Tags\ValueObject\TagId;
+use XTags\Domain\Model\Types\ValueObject\TypesId;
+use XTags\Domain\Model\Vocabularies\ValueObject\VocabulariesId;
+use XTags\Shared\Domain\Model\ValueObject\Version;
 
 interface TagsRepository
 {
@@ -12,4 +16,9 @@ interface TagsRepository
     public function find(TagId $tagId): ?Tags;
 
     public function findAll(): TagsCollection;
+
+    public function findAllByResourceId(ResourceTagId $id, Version $version = null, VocabulariesId $vocabularyId = null, TypesId $typeId = null): TagsCollection;
+
+    public function deleteManyById(array $ids): void;
+
 }

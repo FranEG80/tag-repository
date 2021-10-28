@@ -3,6 +3,11 @@ resouce_tags.get:
   methods: [GET]
   controller: XTags\Infrastructure\Entrypoint\Controller\ResourceTagsController\Get\GetResourceTagsController
 
+resource_tags.post:
+  path: /
+  methods: [POST]
+  controller: XTags\Infrastructure\Entrypoint\Controller\ResourceTagsController\Save\SaveResourceTagsController
+
 resouce_tags.default:
   path: /
   methods: [POST, PUT, DELETE, PATCH]

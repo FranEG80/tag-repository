@@ -5,7 +5,7 @@ namespace XTags\Infrastructure\Exceptions\Api;
 
 final class LanguagesResource extends AppResource
 {
-    private const RESOURCE_CODE = 4;
+    private const RESOURCE_CODE = 2;
     private const RESOURCE_NAME = 'languages';
 
     public static function create(): self

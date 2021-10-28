@@ -5,6 +5,7 @@ namespace XTags\Domain\Model\Tags;
 
 use Assert\Assertion;
 use PcComponentes\Ddd\Domain\Model\ValueObject\CollectionValueObject;
+use XTags\Domain\Model\Definition\ValueObject\DefinitionId;
 
 final class TagsCollection extends CollectionValueObject 
 {
@@ -55,6 +56,21 @@ final class TagsCollection extends CollectionValueObject
     {
         foreach ($this as $item) {
             if ($item->id()->equalTo($tags->id())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param Tags|string $tag
+     */
+    public function hasDefinition($tag): bool
+    {
+        $definition = $tag instanceof Tags ? $tag->definitionId() : DefinitionId::from((int) $tag);
+        foreach ($this as $item) {
+            if ($item->definitionId()->equalTo($definition)) {
                 return true;
             }
         }

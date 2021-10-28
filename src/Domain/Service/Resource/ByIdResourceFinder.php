@@ -23,15 +23,10 @@ class ByIdResourceFinder
         $this->resourceRepository = $resourceRepository;
     }
 
-    public function __invoke( ExternalResourceId $resourceId, Version $version = null): ResourceTags
+    public function __invoke( ExternalResourceId $resourceId, Version $version = null): ?ResourceTags
     {
         $resource = $this->resourceRepository->findByIdResource($resourceId, $version);
 
-        if (null === $resource) {
-            throw new ResourceTagsDoesNotExistException(ResourceTagsResource::create());
-        }
-
         return $resource;
-
     }
 }

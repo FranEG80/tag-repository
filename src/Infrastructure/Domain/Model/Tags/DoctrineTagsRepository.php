@@ -3,15 +3,16 @@ declare(strict_types=1);
 
 namespace XTags\Infrastructure\Domain\Model\Tags;
 
+use Doctrine\ORM\EntityManagerInterface;
 use XTags\App\Entity\EntityManager;
-use XTags\App\Entity\Tag as DoctrineEntity;
-use XTags\App\Repository\ResourceRepository as DoctrineResourceRespository;
-use XTags\App\Repository\LabelRepository as DoctrineLabelRespository;
-use XTags\App\Repository\TagRepository as DoctrineRespository;
-use XTags\App\Repository\TypeRepository as DoctrinTypeRepository;
-use XTags\App\Repository\VocabularyRepository as DoctrineVocabularyRepository;
+use XTags\App\Entity\Tag as DoctrineEntity;use XTags\App\Repository\TagRepository as DoctrineRespository;
+use XTags\Domain\Model\Definition\ValueObject\DefinitionId;
+use XTags\Infrastructure\Domain\Model\ResourceTags\DoctrineResourceTagsRepository as DoctrineResourceRespository;
+use XTags\Infrastructure\Domain\Model\TagLabel\DoctrineTagLabelRepository as DoctrineLabelRespository;
+use XTags\Infrastructure\Domain\Model\Types\DoctrineTypesRepository as DoctrineTypeRepository;
+use XTags\Infrastructure\Domain\Model\Vocabularies\DoctrineVocabulariesRespository as DoctrineVocabularyRepository;
 use XTags\Domain\Model\ResourceTags\ValueObject\ResourceTagId;
-use Xtags\Domain\Model\Tags\{
+use XTags\Domain\Model\Tags\{
     Tags as DomainModel,
     TagsCollection as DomainCollection,
     TagsRepository as DomainRepository
@@ -30,13 +31,15 @@ class DoctrineTagsRepository extends EntityManager implements DomainRepository
     protected $resourceDomainRepository;
     protected $tagLabelRepository;
     protected $tagLabelRtypesRepositoryepository;
+    protected $em;
 
     public function __construct(
         DoctrineRespository $doctrineRepository,
         DoctrineResourceRespository $resourceDomainRepository,
         DoctrineLabelRespository $tagLabelRepository,
-        DoctrinTypeRepository $typesRepository,
-        DoctrineVocabularyRepository $vocabularyRepository 
+        DoctrineTypeRepository $typesRepository,
+        DoctrineVocabularyRepository $vocabularyRepository,
+        EntityManagerInterface $em
     )
     {
         $this->doctrineRepository = $doctrineRepository;
@@ -44,12 +47,13 @@ class DoctrineTagsRepository extends EntityManager implements DomainRepository
         $this->tagLabelRepository = $tagLabelRepository;
         $this->typesRepository = $typesRepository;
         $this->vocabularyRepository = $vocabularyRepository;
+        $this->em = $em;
     }
 
     public function save(DomainModel $tags): void 
     {
         $tagsEntity = $this->modelToEntity($tags);
-        $this->saveEntity($tagsEntity);
+        $this->saveEntity($tagsEntity, $this->em);
     }
 
     public function find(TagId $id): DomainModel
@@ -71,13 +75,40 @@ class DoctrineTagsRepository extends EntityManager implements DomainRepository
         return DomainCollection::from($collection);
     }
 
-    public function findAllByResourceId($id, $version): DomainCollection
+    public function findAllByResourceId(
+        ResourceTagId $id, 
+        Version $version = null, 
+        VocabulariesId $vocabularyId = null, 
+        TypesId $typeId = null
+    ): DomainCollection
     {
-        $collection = [];
+        $tagsCollection = [];
         if (null === $version) $version = Version::from(DomainModel::CURRENT_VERSION_TAG);
-        $tags = $this->doctrineRepository->findByIdResource($id, $version);
+        if (null !== $vocabularyId) $vocabularyId = $vocabularyId->value();
+        if (null !== $typeId) $typeId = $typeId->value();
 
-        return DomainCollection::from($collection);
+        $tags = $this->doctrineRepository->findByIdResource($id->value(), $version->value(), $vocabularyId, $typeId);
+
+        foreach ($tags as $tag) {
+            $tagWithLanguage = $this->entityToModel($tag);
+            $labelsEntity = $tag->getDefinition()->getLabels();
+            $labels = [];
+            foreach($labelsEntity as $label) {
+                $labels[] = DoctrineLabelRespository::entityToModel($label);
+            }
+            $tagWithLanguage->labels = $labels;
+            $tagsCollection[] = $tagWithLanguage;
+        }
+        return DomainCollection::from($tagsCollection);
+    }
+
+    public function deleteManyById(array $ids): void
+    {
+        $deleteIds = [];
+        foreach ($ids as $id) $deleteIds[] = $id instanceof TagId ? $id->value() : $id;
+
+        $this->doctrineRepository->deleteManyById($deleteIds);
+
     }
     
     private function modelToEntity(DomainModel $tagsModel): DoctrineEntity
@@ -95,10 +126,6 @@ class DoctrineTagsRepository extends EntityManager implements DomainRepository
         $entity->setUpdatedAt($tagsModel->createdAt());
         $entity->setCreatedAt($tagsModel->updatedAt());
 
-// TODO labels?
-        // $labels = $this->tagLabelRepository->find($tagsModel->));
-        // $entity->addLabel($labels);
-
         return $entity;
     }
 
@@ -107,11 +134,12 @@ class DoctrineTagsRepository extends EntityManager implements DomainRepository
         $tagsModel = DomainModel::from(
             TagId::from((string ) $tags->getId()),
             TagName::from($tags->getName()),
-            ResourceTagId::from($tags->getResource()[0]->getId()),
+            DefinitionId::from((int) $tags->getDefinition()->getName()),
+            ResourceTagId::from($tags->getResource()->getId()->jsonSerialize()),
             VocabulariesId::from($tags->getVocabulary()->getId()),
             TypesId::from($tags->getType()->getId()),
-            DateTimeInmutable::from((string) $tags->getCreatedAt()),
-            DateTimeInmutable::from((string) $tags->getUpdatedAt()),
+            DateTimeInmutable::fromAnotherDateTime($tags->getCreatedAt()),
+            DateTimeInmutable::fromAnotherDateTime($tags->getUpdatedAt()),
             Version::from($tags->getVersion())
         );
 

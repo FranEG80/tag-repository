@@ -10,6 +10,7 @@ services:
     arguments:
       $doctrineRepository: '@XTags\App\Repository\ResourceRepository'
       $tagRepository: '@XTags\App\Repository\TagRepository'
+      $em: '@doctrine.orm.default_entity_manager'
 
   XTags\Domain\Model\ResourceTags\ResourceTagsRepository:
       alias: XTags\Infrastructure\Domain\Model\ResourceTags\DoctrineResourceTagsRepository
@@ -19,6 +20,7 @@ services:
     class: XTags\Infrastructure\Domain\Model\Types\DoctrineTypesRepository
     arguments:
       $doctrineRepository: '@XTags\App\Repository\TypeRepository'
+      $em: '@doctrine.orm.default_entity_manager'
 
   XTags\Domain\Model\Types\TypesRepository:
       alias: XTags\Infrastructure\Domain\Model\Types\DoctrineTypesRepository
@@ -28,10 +30,11 @@ services:
     class: XTags\Infrastructure\Domain\Model\Tags\DoctrineTagsRepository
     arguments:
       $doctrineRepository: '@XTags\App\Repository\TagRepository'
-      $resourceDomainRepository: '@XTags\App\Repository\DoctrineResourceRespository'
-      $tagLabelRepository: '@XTags\App\Repository\DoctrineLabelRespository'
-      $typesRepository: '@XTags\App\Repository\DoctrinTypeRepository'
-      $vocabularyRepository: '@XTags\App\Repository\DoctrineVocabularyRepository'
+      $resourceDomainRepository: '@XTags\Infrastructure\Domain\Model\ResourceTags\DoctrineResourceTagsRepository'
+      $tagLabelRepository: '@XTags\Infrastructure\Domain\Model\TagLabel\DoctrineTagLabelRepository'
+      $typesRepository: '@XTags\Infrastructure\Domain\Model\Types\DoctrineTypesRepository'
+      $vocabularyRepository: '@XTags\Infrastructure\Domain\Model\Vocabularies\DoctrineVocabulariesRespository'
+      $em: '@doctrine.orm.default_entity_manager'
 
   XTags\Domain\Model\Tags\TagsRepository:
       alias: XTags\Infrastructure\Domain\Model\Tags\DoctrineTagsRepository
@@ -41,6 +44,7 @@ services:
     class: XTags\Infrastructure\Domain\Model\TagLabel\DoctrineTagLabelRepository
     arguments:
       $doctrineRepository: '@XTags\App\Repository\LabelRepository'
+      $em: '@doctrine.orm.default_entity_manager'
 
   XTags\Domain\Model\TagLabel\TagLabelRepository:
       alias: XTags\Infrastructure\Domain\Model\TagLabel\DoctrineTagLabelRepository
@@ -50,7 +54,18 @@ services:
     class: XTags\Infrastructure\Domain\Model\Vocabularies\DoctrineVocabulariesRespository
     arguments:
       $doctrineRepository: '@XTags\App\Repository\VocabularyRepository'
+      $em: '@doctrine.orm.default_entity_manager'
 
   XTags\Domain\Model\Vocabularies\VocabulariesRepository:
       alias: XTags\Infrastructure\Domain\Model\Vocabularies\DoctrineVocabulariesRespository
+
+  ## Definition
+  XTags\Infrastructure\Domain\Model\Definition\DoctrineDefinitionRepository:
+    class: XTags\Infrastructure\Domain\Model\Definition\DoctrineDefinitionRepository
+    arguments:
+      $doctrineRepository: '@XTags\App\Repository\DefinitionRepository'
+      $em: '@doctrine.orm.default_entity_manager'
+
+  XTags\Domain\Model\Definition\DefinitionRepository:
+      alias: XTags\Infrastructure\Domain\Model\Definition\DoctrineDefinitionRepository
 

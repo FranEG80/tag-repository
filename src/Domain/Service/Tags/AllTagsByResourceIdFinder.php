@@ -3,10 +3,14 @@ declare(strict_types=1);
 
 namespace XTags\Domain\Service\Tags;
 
+use XTags\Domain\Model\ResourceTags\ValueObject\ResourceTagId;
 use XTags\Domain\Model\Tags\Exception\TagsDoesNotExistException;
 use XTags\Domain\Model\Tags\TagsCollection;
 use XTags\Domain\Model\Tags\TagsRepository;
+use XTags\Domain\Model\Types\ValueObject\TypesId;
+use XTags\Domain\Model\Vocabularies\ValueObject\VocabulariesId;
 use XTags\Infrastructure\Exceptions\Api\TagsResources;
+use XTags\Shared\Domain\Model\ValueObject\Version;
 
 class AllTagsByResourceIdFinder
 {
@@ -17,14 +21,13 @@ class AllTagsByResourceIdFinder
         $this->tagsRepository = $tagsRepository;
     }
 
-    public function __invoke(): TagsCollection
+    public function __invoke(
+        ResourceTagId $resourceId,
+        ?VocabulariesId $vocabulariesId,
+        ?TypesId $typesId,
+        ?Version $version
+    ): TagsCollection
     {
-        $tags = TagsCollection::from([]); //$this->tagsRepository->find();
-
-        if (null === $tags) {
-            throw new TagsDoesNotExistException(TagsResources::create());
-        }
-
-        return $tags;
+        return $this->tagsRepository->findAllByResourceId($resourceId, $version, $vocabulariesId, $typesId);
     }
 }

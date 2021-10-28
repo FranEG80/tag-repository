@@ -35,11 +35,6 @@ class Tag
      * @ORM\JoinColumn(nullable=false)
      */
     private $type;
-
-    /**
-     * @ORM\ManyToMany(targetEntity=Label::class, mappedBy="definition_id")
-     */
-    private $labels;
     
     /**
      * @ORM\Column(type="string", length=10)
@@ -62,6 +57,11 @@ class Tag
      */
     private $resource;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Definition::class)
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $definition;
 
     public function __construct()
     {
@@ -146,33 +146,6 @@ class Tag
         return $this;
     }
 
-    /**
-     * @return Collection|Label[]
-     */
-    public function getLabels(): Collection
-    {
-        return $this->labels;
-    }
-
-    public function addLabel(Label $label): self
-    {
-        if (!$this->labels->contains($label)) {
-            $this->labels[] = $label;
-            $label->addDefinitionId($this);
-        }
-
-        return $this;
-    }
-
-    public function removeLabel(Label $label): self
-    {
-        if ($this->labels->removeElement($label)) {
-            $label->removeDefinitionId($this);
-        }
-
-        return $this;
-    }
-
     public function getResource(): ?Resource
     {
         return $this->resource;
@@ -181,6 +154,18 @@ class Tag
     public function setResource(?Resource $resource): self
     {
         $this->resource = $resource;
+
+        return $this;
+    }
+
+    public function getDefinition(): ?Definition
+    {
+        return $this->definition;
+    }
+
+    public function setDefinition(?Definition $definition): self
+    {
+        $this->definition = $definition;
 
         return $this;
     }

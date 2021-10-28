@@ -4,14 +4,14 @@ declare(strict_types=1);
 namespace XTags\Application\Query\Vocabularies\GetByIdVocabulary;
 
 use Symfony\Component\Messenger\MessageBusInterface;
-use XTags\Domain\Service\Vocabularies\AllVocabulariesFinder;
+use XTags\Domain\Service\Vocabularies\ByIdVocabulariesFinder;
 
 class GetByIdVocabularyHandler
 {
-    private AllVocabulariesFinder $allVocabulariesFinder;
+    private ByIdVocabulariesFinder $allVocabulariesFinder;
 
     public function __construct(
-        AllVocabulariesFinder $allVocabulariesFinder,
+        ByIdVocabulariesFinder $allVocabulariesFinder,
         MessageBusInterface $eventBus
     )
     {
@@ -23,8 +23,6 @@ class GetByIdVocabularyHandler
      */
     public function __invoke(GetByIdVocabularyQuery $query)
     {
-        $vocabularies = [];
-        $vocabularies[] = ($this->allVocabulariesFinder)();
-        return $vocabularies;
+        return ($this->allVocabulariesFinder)($query->id());
     }
 }

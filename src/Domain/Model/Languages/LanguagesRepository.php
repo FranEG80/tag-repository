@@ -11,5 +11,7 @@ interface LanguagesRepository
 
     public function find(LanguagesId $languageId): ?Languages;
 
+    public function findByName($name): ?Languages;
+
     public function findAll(): LanguagesCollection;
 }
