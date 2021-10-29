@@ -15,6 +15,8 @@ interface TagsRepository
 
     public function find(TagId $tagId): ?Tags;
 
+    public function findBy($criteria, $opts = null): TagsCollection;
+
     public function findAll(): TagsCollection;
 
     public function findAllByResourceId(ResourceTagId $id, Version $version = null, VocabulariesId $vocabularyId = null, TypesId $typeId = null): TagsCollection;

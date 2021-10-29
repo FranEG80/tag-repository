@@ -2,8 +2,6 @@
 
 namespace XTags\App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use XTags\App\Repository\ResourceRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
@@ -15,7 +13,8 @@ class Resource
 {
     /**
      * @ORM\Id
-     * @ORM\Column(type="uuid", unique=true)
+     * @ORM\Column(type="uuid")
+     * @ORM\OneToOne(targetEntity=Resource::class, mappedBy="resource")
      */
     private $id;
 
@@ -44,20 +43,20 @@ class Resource
      */
     private $updated_at;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Tag::class, mappedBy="resource", orphanRemoval=true)
-     */
-    private $tags;
-
     public function __construct()
     {
         $this->id = Uuid::v4();
-        $this->tags = new ArrayCollection();
     }
 
     public function getId(): ?Uuid
     {
         return $this->id;
+    }
+
+    public function setId($id): self
+    {
+        $this->id = $id;
+        return $this;
     }
 
     public function getExternalId()
@@ -67,7 +66,7 @@ class Resource
 
     public function setExternalId($external_id): self
     {
-        $this->external_id = Uuid::fromString($external_id);
+        $this->external_id = $external_id;
 
         return $this;
     }
@@ -80,18 +79,6 @@ class Resource
     public function setExternalSystemId(int $external_system_id): self
     {
         $this->external_system_id = $external_system_id;
-
-        return $this;
-    }
-
-    public function getVersion(): ?string
-    {
-        return $this->version;
-    }
-
-    public function setVersion(string $version): self
-    {
-        $this->version = $version;
 
         return $this;
     }
@@ -120,32 +107,14 @@ class Resource
         return $this;
     }
 
-    /**
-     * @return Collection|Tag[]
-     */
-    public function getTags(): Collection
+    public function getVersion(): ?string
     {
-        return $this->tags;
+        return $this->version;
     }
 
-    public function addTag(Tag $tag): self
+    public function setVersion(string $version): self
     {
-        if (!$this->tags->contains($tag)) {
-            $this->tags[] = $tag;
-            $tag->setResource($this);
-        }
-
-        return $this;
-    }
-
-    public function removeTag(Tag $tag): self
-    {
-        if ($this->tags->removeElement($tag)) {
-            // set the owning side to null (unless already changed)
-            if ($tag->getResource() === $this) {
-                $tag->setResource(null);
-            }
-        }
+        $this->version = $version;
 
         return $this;
     }

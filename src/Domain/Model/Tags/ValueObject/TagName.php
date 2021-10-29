@@ -10,18 +10,18 @@ class TagName extends StringValueObject
 {
     public function __construct(string $value)
     {
-        Assert::lazy()
-            ->that($value, 'tag.name')->minLength(5)
-            ->that($value, 'tag.name')->notRegex(
-                '/^\s/',
-                'Name cannot begin with a whitespace',
-            )
-            ->that($value, 'tag.name')->notRegex(
-                '/\s$/',
-                'Name cannot end with a whitespace',
-            )
-            ->verifyNow()
-        ;
+        // Assert::lazy()
+        //     ->that($value, 'tag.name')->minLength(5)
+        //     ->that($value, 'tag.name')->notRegex(
+        //         '/^\s/',
+        //         'Name cannot begin with a whitespace',
+        //     )
+        //     ->that($value, 'tag.name')->notRegex(
+        //         '/\s$/',
+        //         'Name cannot end with a whitespace',
+        //     )
+        //     ->verifyNow()
+        // ;
 
         parent::__construct($value);
     }

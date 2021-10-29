@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace XTags\Domain\Service\Tags;
 
-use XTags\Domain\Model\Definition\ValueObject\DefinitionId;
 use XTags\Domain\Model\ResourceTags\ValueObject\ResourceTagId;
 use XTags\Domain\Model\Tags\Exception\TagsAlreadyExistException;
 use XTags\Domain\Model\Tags\Tags;
 use XTags\Domain\Model\Tags\TagsRepository;
+use XTags\Domain\Model\ValueObject\DefinitionName;
 use XTags\Domain\Model\Tags\ValueObject\TagId;
 use XTags\Domain\Model\Tags\ValueObject\TagName;
 use XTags\Domain\Model\Types\ValueObject\TypesId;
@@ -24,17 +24,16 @@ class CreateTags
     }
 
     public function __invoke(
-        TagId $tagId,
         TagName $custonName,
-        DefinitionId $definitionId,
+        DefinitionName $definition,
         ResourceTagId $resourceTagId,
         VocabulariesId $vocabulariesId,
         TypesId $typesId
     ): Tags
     {
-        $this->assertTagDoesNotExists($tagId);
+        if ($definition) $this->assertTagDoesNotExists($definition);
 
-        $tag = Tags::create( $tagId, $custonName, $definitionId, $resourceTagId, $vocabulariesId, $typesId );
+        $tag = Tags::create( $custonName, $definition, $resourceTagId, $vocabulariesId, $typesId );
 
         $this->repository->save($tag);
 
@@ -42,9 +41,11 @@ class CreateTags
         
     }
 
-    public function assertTagDoesNotExists(TagId $tagId): void
+    public function assertTagDoesNotExists(DefinitionName $definition): void
     {
-        if (null !== $this->repository->find($tagId)) {
+        if (count($this->repository->findBy([
+            'definition' => $definition
+        ])) > 0) {
             throw new TagsAlreadyExistException(TagsResources::create(), null);
         }
     }

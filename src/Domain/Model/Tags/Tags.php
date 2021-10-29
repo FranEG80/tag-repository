@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace XTags\Domain\Model\Tags;
 
-use XTags\Domain\Model\Definition\ValueObject\DefinitionId;
 use XTags\Domain\Model\ResourceTags\ValueObject\ResourceTagId;
 use XTags\Domain\Model\Tags\ValueObject\TagName;
 use XTags\Domain\Model\Tags\Event\TagWasCreated;
+use XTags\Domain\Model\ValueObject\DefinitionName;
 use XTags\Domain\Model\Tags\ValueObject\TagId;
 use XTags\Domain\Model\Types\ValueObject\TypesId;
 use XTags\Domain\Model\Vocabularies\ValueObject\VocabulariesId;
@@ -22,8 +22,8 @@ final class Tags extends DomainModel
     private TagId $id;
     private VocabulariesId $vocabularyId;
     private TypesId $typeId;
-    private DefinitionId $defintionId;
     private ResourceTagId $resourceId;
+    private DefinitionName $definition;
     private TagName $customName;
     private DateTimeInmutable $createdAt;
     private DateTimeInmutable $updatedAt;
@@ -32,7 +32,7 @@ final class Tags extends DomainModel
     private function __construct(
         TagId $id,
         TagName $customName,
-        DefinitionId $definitionId,
+        DefinitionName $definition,
         ResourceTagId $resourceId,
         VocabulariesId $vocabularyId,
         TypesId $typeId,
@@ -43,9 +43,9 @@ final class Tags extends DomainModel
     {
         $this->id = $id;
         $this->customName = $customName;
-        $this->defintionId = $definitionId;
         $this->resourceId = $resourceId;
         $this->vocabularyId = $vocabularyId;
+        $this->definition = $definition;
         $this->typeId = $typeId;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
@@ -61,19 +61,18 @@ final class Tags extends DomainModel
      * Used to create a non previously existent entity. May register events.
      */
     public static function create(
-        TagId $id,
         TagName $customName,
-        DefinitionId $definitionId,
+        DefinitionName $definitionName,
         ResourceTagId $resourceId,
         VocabulariesId $vocabularyId,
         TypesId $typeId
     ): self
     {
-        $dateNow = new DateTimeInmutable();
+        $dateNow = new DateTimeInmutable('now');
         $instance = new self(
-            $id, 
+            TagId::v4(), 
             $customName,
-            $definitionId,
+            $definitionName,
             $resourceId, 
             $vocabularyId, 
             $typeId, 
@@ -85,7 +84,7 @@ final class Tags extends DomainModel
         $instance->recordThat(TagWasCreated::from(
             $instance->id(), 
             $instance->customName(),
-            $instance->definitionId(),
+            $instance->definition(),
             $instance->resourceId(),
             $instance->vocabularyId(),
             $instance->typeId(),
@@ -102,8 +101,8 @@ final class Tags extends DomainModel
      */
     public static function from(
         TagId $id,
-        TagName $customName,
-        DefinitionId $definitionId,
+        TagName $customName, 
+        DefinitionName $definitionName,
         ResourceTagId $resourceId,
         VocabulariesId $vocabularyId,
         TypesId $typeId,
@@ -112,7 +111,7 @@ final class Tags extends DomainModel
         Version $version
     ): self
     {
-        return new self($id, $customName, $definitionId, $resourceId, $vocabularyId, $typeId, $createdAt, $updatedAt, $version);
+        return new self($id, $customName,  $definitionName, $resourceId, $vocabularyId, $typeId, $createdAt, $updatedAt, $version);
     }
 
     public function id(): TagId
@@ -135,6 +134,11 @@ final class Tags extends DomainModel
         return $this->vocabularyId;
     }
 
+    public function definition(): DefinitionName
+    {
+        return $this->definition;
+    }
+
     public function typeId(): TypesId
     {
         return $this->typeId;
@@ -155,17 +159,12 @@ final class Tags extends DomainModel
         return $this->version;
     }
 
-    public function definitionId()
-    {
-        return $this->defintionId;
-    }
-
     public function jsonSerialize()
     {
         return [
             'id' => $this->id,
             'tag_mame' => $this->customName,
-            'definition_id' => $this->defintionId,
+            'definition' => $this->definition,
             'resource_tag_id' => $this->resourceId,
             'vocabularies_id' => $this->vocabularyId,
             'types_id' => $this->typeId,

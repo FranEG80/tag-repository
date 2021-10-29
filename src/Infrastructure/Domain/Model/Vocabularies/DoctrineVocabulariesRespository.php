@@ -9,9 +9,10 @@ use XTags\App\Entity\Vocabulary as DoctrineEntity;
 use XTags\App\Repository\VocabularyRepository as DoctrineRepository;
 use XTags\Domain\Model\Vocabularies\ValueObject\VocabulariesId;
 use XTags\Domain\Model\Vocabularies\ValueObject\VocabulariesName;
-use Xtags\Domain\Model\Vocabularies\Vocabularies as DomainModel;
+use XTags\Domain\Model\Vocabularies\Vocabularies as DomainModel;
+use XTags\Domain\Model\Vocabularies\Vocabularies;
 use XTags\Domain\Model\Vocabularies\VocabulariesCollection;
-use Xtags\Domain\Model\Vocabularies\VocabulariesRepository as DomainRepository;
+use XTags\Domain\Model\Vocabularies\VocabulariesRepository as DomainRepository;
 use XTags\Shared\Application\Service\GuzzleClient;
 use XTags\Shared\Domain\Model\ValueObject\DateTimeInmutable;
 use XTags\Shared\Domain\Model\ValueObject\Url;
@@ -102,16 +103,18 @@ final class DoctrineVocabulariesRespository extends EntityManager  implements Do
         return $output;        
     }
 
-    public function modelToEntity(DomainModel $vocabularyModel, DoctrineEntity $vocabularyEntity): DoctrineEntity
+    public function modelToEntity(DomainModel $vocabularyModel, DoctrineEntity $vocabularyEntity = null): DoctrineEntity
     {
+        if (null == $vocabularyEntity) $vocabularyEntity = new DoctrineEntity();
+        if (null !== $vocabularyModel->id()) $vocabularyEntity->setId($vocabularyModel->id()->value());
         $vocabularyEntity->setName($vocabularyModel->name()->value());
         $vocabularyEntity->setUrl($vocabularyModel->url_vocabulary()->value());
         $vocabularyEntity->setDefinitionUrl($vocabularyModel->url_definitions()->value());
-        $vocabularyEntity->setUrl($vocabularyModel->url_search()->value());
+        $vocabularyEntity->setSearchUrl($vocabularyModel->url_search()->value());
         $vocabularyEntity->setCreatedAt($vocabularyModel->created_at());
         $vocabularyEntity->setUpdatedAt($vocabularyModel->update_at());
         $vocabularyEntity->setVersion((string) $vocabularyModel->version()->value());
-
+;
         // TODO add semanticSchema[] to entity
 
         return $vocabularyEntity;

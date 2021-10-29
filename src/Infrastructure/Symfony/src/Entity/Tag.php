@@ -20,21 +20,30 @@ class Tag
     private $id;
 
     /**
+     * @ORM\Column(type="integer")
+     */
+    private $vocabulary;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $type;
+
+    /**
+     * @ORM\Column(type="uuid")
+     */
+    private $resource;
+
+
+    /**
      * @ORM\Column(type="string", length=255)
      */
     private $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Vocabulary::class)
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\Column(type="string", length=255)
      */
-    private $vocabulary;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=Type::class)
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $type;
+    private $definition;
     
     /**
      * @ORM\Column(type="string", length=10)
@@ -51,27 +60,57 @@ class Tag
      */
     private $updated_at;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Resource::class, inversedBy="tags")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $resource;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=Definition::class)
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $definition;
 
     public function __construct()
     {
         $this->id = Uuid::v4();
-        $this->labels = new ArrayCollection();
+    }
+
+    public function setId(Uuid $id): self
+    {
+        $this->id = $id;
+        return $this;
     }
 
     public function getId(): ?Uuid
     {
         return $this->id;
+    }
+
+    public function getVocabulary(): ?int
+    {
+        return $this->vocabulary;
+    }
+
+    public function setVocabulary(int $vocabulary): self
+    {
+        $this->vocabulary = $vocabulary;
+
+        return $this;
+    }
+
+    public function getType(): ?int
+    {
+        return $this->type;
+    }
+
+    public function setType(int $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getResource(): ?Uuid
+    {
+        return $this->resource;
+    }
+
+    public function setResource(Uuid $resource): self
+    {
+        $this->resource = $resource;
+
+        return $this;
     }
 
     public function getName(): ?string
@@ -82,30 +121,6 @@ class Tag
     public function setName(string $name): self
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    public function getVocabulary(): ?Vocabulary
-    {
-        return $this->vocabulary;
-    }
-
-    public function setVocabulary(?Vocabulary $vocabulary): self
-    {
-        $this->vocabulary = $vocabulary;
-
-        return $this;
-    }
-
-    public function getType(): ?Type
-    {
-        return $this->type;
-    }
-
-    public function setType(?Type $type): self
-    {
-        $this->type = $type;
 
         return $this;
     }
@@ -146,27 +161,16 @@ class Tag
         return $this;
     }
 
-    public function getResource(): ?Resource
-    {
-        return $this->resource;
-    }
-
-    public function setResource(?Resource $resource): self
-    {
-        $this->resource = $resource;
-
-        return $this;
-    }
-
-    public function getDefinition(): ?Definition
+    public function getDefinition(): ?string
     {
         return $this->definition;
     }
 
-    public function setDefinition(?Definition $definition): self
+    public function setDefinition(string $definition): self
     {
         $this->definition = $definition;
 
         return $this;
     }
+
 }

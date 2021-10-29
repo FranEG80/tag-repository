@@ -6,10 +6,7 @@ namespace XTags\Domain\Service\ResourceTags;
 use XTags\Domain\Model\ResourceTags\Exception\ResourceTagsAlreadyExistException;
 use XTags\Domain\Model\ResourceTags\ResourceTags;
 use XTags\Domain\Model\ResourceTags\ResourceTagsRepository;
-use XTags\Domain\Model\ResourceTags\Exception\ResourceTagsDoesNotExistException;
 use XTags\Domain\Model\ResourceTags\ValueObject\ExternalResourceId;
-use XTags\Domain\Model\ResourceTags\ValueObject\ResourceTagId;
-use XTags\Domain\Model\Tags\ValueObject\TagId;
 use XTags\Infrastructure\Exceptions\Api\ResourceTagsResource;
 use XTags\Shared\Domain\Model\ValueObject\Version;
 

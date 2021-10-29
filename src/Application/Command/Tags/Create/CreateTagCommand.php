@@ -5,9 +5,10 @@ namespace XTags\Application\Command\Tags\Create;
 
 use Assert\Assert;
 use PcComponentes\Ddd\Application\Command;
-use XTags\Domain\Model\Definition\ValueObject\DefinitionId;
-use XTags\Domain\Model\Languages\ValueObject\LanguagesId;
+use XTags\Domain\Model\ResourceTags\ValueObject\ResourceTagId;
+use XTags\Domain\Model\ValueObject\DefinitionName;
 use XTags\Domain\Model\Tags\ValueObject\TagName;
+use XTags\Domain\Model\Types\ValueObject\TypesId;
 use XTags\Domain\Model\Vocabularies\ValueObject\VocabulariesId;
 use XTags\Infrastructure\Message\Generator\Tags\TagsCommand;
 use XTags\Shared\Domain\Model\ValueObject\Uuid;
@@ -18,21 +19,27 @@ class CreateTagCommand extends Command
     private const NAME = 'create_tag_label';
     private const VERSION = '1';
 
-    private LanguagesId $langId;
+    private DefinitionName $definition;
+    private ResourceTagId $resourceId;
     private VocabulariesId $vocabularyId;
-    private DefinitionId $definitionId;
     private Version $version;
     private TagName $name;
 
-    public static function create($langId, $vocabularyId, $definitionId, $name, $version):self
+    public static function create($definition, $resourceId, $vocabularyId, $version,  $name, $typesId):self
     {
         return self::fromPayload(Uuid::v4(), [
-            'langId' => $langId,
+            'definition' => $definition,
+            'resourceId' => $resourceId,
             'vocabularyId' => $vocabularyId,
-            'definitionId' => $definitionId,
             'name' => $name,
             'version' => $version,
+            'typesId' => $typesId
         ]);
+    }
+
+    public function definition(): ?DefinitionName
+    {
+        return $this->definition;
     }
 
     public function vocabularyId(): VocabulariesId
@@ -40,9 +47,9 @@ class CreateTagCommand extends Command
         return $this->vocabularyId;
     }
 
-    public function langId(): LanguagesId
+    public function resourceId(): ResourceTagId
     {
-        return $this->langId;
+        return $this->resourceId;
     }
 
     public function name(): TagName
@@ -55,9 +62,9 @@ class CreateTagCommand extends Command
         return $this->version;
     }
 
-    public function definitionId(): DefinitionId
+    public function typesId(): TypesId
     {
-        return $this->definitionId;
+        return $this->typesId;
     }
 
     public static function messageName(): string
@@ -75,16 +82,17 @@ class CreateTagCommand extends Command
         $payload = $this->messagePayload();
 
         // Assert::lazy()
-        //     ->that($payload['tagId'], 'tagId')->uuid()
+        //     ->that($payload['definition'], 'definition')->uuid()
         //     ->that($payload['langId'], 'langId')->integer()
         //     ->that($payload['name'], 'name')->string()
         //     ->verifyNow()
         // ;
 
-        $this->langId = LanguagesId::from($payload['langId']);        
-        $this->vocabularyId = VocabulariesId::from($payload['vocabularyId']);        
-        $this->definitionId = DefinitionId::from($payload['definitionId']);        
-        $this->name = TagName::from($payload['name']);        
-        $this->version = Version::from($payload['version']);        
+        $this->definition = DefinitionName::from((string) $payload['definition']);
+        $this->resourceId = ResourceTagId::from((string) $payload['resourceId']);
+        $this->vocabularyId = VocabulariesId::from($payload['vocabularyId']);
+        $this->name = TagName::from($payload['name']);
+        $this->version = Version::from((string) $payload['version']);
+        $this->typesId = TypesId::from((int) $payload['typesId']);
     }
 }

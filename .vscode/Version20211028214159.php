@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20211026112508 extends AbstractMigration
+final class Version20211028214159 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,7 +20,6 @@ final class Version20211026112508 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE TABLE definition (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE label (id INT AUTO_INCREMENT NOT NULL, language_id INT NOT NULL, vocabulary_id INT NOT NULL, definition_id INT NOT NULL, name VARCHAR(255) NOT NULL, version VARCHAR(10) NOT NULL, created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', updated_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', INDEX IDX_EA750E882F1BAF4 (language_id), INDEX IDX_EA750E8AD0E05F6 (vocabulary_id), INDEX IDX_EA750E8D11EA911 (definition_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE language (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(10) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE resource (id BINARY(16) NOT NULL COMMENT \'(DC2Type:uuid)\', external_id BINARY(16) NOT NULL COMMENT \'(DC2Type:uuid)\', external_system_id INT NOT NULL, version VARCHAR(10) NOT NULL, created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', updated_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
@@ -35,21 +34,18 @@ final class Version20211026112508 extends AbstractMigration
         $this->addSql('ALTER TABLE tag ADD CONSTRAINT FK_389B783AD0E05F6 FOREIGN KEY (vocabulary_id) REFERENCES vocabulary (id)');
         $this->addSql('ALTER TABLE tag ADD CONSTRAINT FK_389B783C54C8C93 FOREIGN KEY (type_id) REFERENCES type (id)');
         $this->addSql('ALTER TABLE tag ADD CONSTRAINT FK_389B78389329D25 FOREIGN KEY (resource_id) REFERENCES resource (id)');
-        $this->addSql('ALTER TABLE tag ADD CONSTRAINT FK_389B783D11EA911 FOREIGN KEY (definition_id) REFERENCES definition (id)');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE label DROP FOREIGN KEY FK_EA750E8D11EA911');
-        $this->addSql('ALTER TABLE tag DROP FOREIGN KEY FK_389B783D11EA911');
         $this->addSql('ALTER TABLE label DROP FOREIGN KEY FK_EA750E882F1BAF4');
         $this->addSql('ALTER TABLE tag DROP FOREIGN KEY FK_389B78389329D25');
         $this->addSql('ALTER TABLE tag DROP FOREIGN KEY FK_389B783C54C8C93');
         $this->addSql('ALTER TABLE label DROP FOREIGN KEY FK_EA750E8AD0E05F6');
         $this->addSql('ALTER TABLE `schema` DROP FOREIGN KEY FK_B88E4152AD0E05F6');
         $this->addSql('ALTER TABLE tag DROP FOREIGN KEY FK_389B783AD0E05F6');
-        $this->addSql('DROP TABLE definition');
         $this->addSql('DROP TABLE label');
         $this->addSql('DROP TABLE language');
         $this->addSql('DROP TABLE resource');

@@ -7,7 +7,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use XTags\App\Entity\EntityManager;
 use XTags\App\Repository\LabelRepository as DoctrineRespository;
 use XTags\App\Entity\Label as DoctrineEntity;
-use XTags\Domain\Model\Definition\ValueObject\DefinitionId;
+use XTags\App\Entity\Language;
+use XTags\App\Entity\Vocabulary;
 use XTags\Domain\Model\Languages\ValueObject\LanguagesId;
 use XTags\Domain\Model\TagLabel\{
     TagLabelRepository as DomainRepository,
@@ -16,7 +17,10 @@ use XTags\Domain\Model\TagLabel\{
 };
 use XTags\Domain\Model\TagLabel\ValueObject\LabelId;
 use XTags\Domain\Model\TagLabel\ValueObject\LabelName;
+use XTags\Domain\Model\Tags\ValueObject\TagId;
 use XTags\Domain\Model\Vocabularies\ValueObject\VocabulariesId;
+use XTags\Infrastructure\Domain\Model\Languages\DoctrineLanguagesRespository;
+use XTags\Infrastructure\Domain\Model\Vocabularies\DoctrineVocabulariesRespository;
 use XTags\Shared\Domain\Model\ValueObject\DateTimeInmutable;
 use XTags\Shared\Domain\Model\ValueObject\Id;
 use XTags\Shared\Domain\Model\ValueObject\Version;
@@ -27,9 +31,17 @@ class DoctrineTagLabelRepository extends EntityManager implements DomainReposito
     protected $doctrineRepository;
     protected EntityManagerInterface $em;
 
-    public function __construct(DoctrineRespository $doctrineRepository, EntityManagerInterface $em )
+    public function __construct(
+        DoctrineRespository $doctrineRepository, 
+        EntityManagerInterface $em,
+        DoctrineLanguagesRespository $doctrineLanguageRepository,
+        DoctrineVocabulariesRespository $doctrineVocabularyRepository
+    )
+
     {
         $this->doctrineRepository = $doctrineRepository;
+        $this->doctrineLanguageRepository = $doctrineLanguageRepository;
+        $this->doctrineVocabularyRepository = $doctrineVocabularyRepository;
         $this->em = $em;
     }
 
@@ -83,10 +95,18 @@ class DoctrineTagLabelRepository extends EntityManager implements DomainReposito
         return $labelCollection;
     }
     
-    public function modelToEntity(DomainModel $labelModel, DoctrineEntity $labelEntity): DoctrineEntity
+    public function modelToEntity(DomainModel $labelModel, DoctrineEntity $labelEntity = null): DoctrineEntity
     {
-        $labelEntity->setName($labelModel->name()->value());
+        if (null === $labelEntity) $labelEntity = new DoctrineEntity();
 
+        if (null !== $labelModel->id()) $labelEntity->setId($labelModel->id()->value());
+        $language = $this->doctrineLanguageRepository->find($labelModel->langId());
+        $language = $this->doctrineLanguageRepository->modelToEntity($language);
+        $labelEntity->setLanguage($language);
+        if ($labelModel->name()) $labelEntity->setName($labelModel->name()->value());
+        $tag = $this->doctrineLanguageRepository->find($labelModel->tagId());
+        $labelEntity->setTag($labelModel->$this->doctrineLanguageRepository->modelToEntity($tag));
+        
         return $labelEntity;
     }
 
@@ -96,11 +116,7 @@ class DoctrineTagLabelRepository extends EntityManager implements DomainReposito
             LabelId::from($label->getId()), 
             LabelName::from($label->getName()), 
             LanguagesId::from($label->getLanguage()->getId()), 
-            DefinitionId::from($label->getDefinition()->getId()),
-            VocabulariesId::from($label->getVocabulary()->getId()),
-            Version::from($label->getVersion()),
-            DateTimeInmutable::fromAnotherDateTime($label->getCreatedAt()),
-            DateTimeInmutable::fromAnotherDateTime($label->getUpdatedAt())
+            TagId::from($label->getTag()->getId()->toRfc4122()),
         );
 
         return  $labelModel;

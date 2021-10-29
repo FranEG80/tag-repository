@@ -27,7 +27,7 @@ class CreateResourceTagHandler
             $command->version()
         );
 
-        $this->dispatchEvents($resourceTag);
+        // $this->dispatchEvents($resourceTag);
 
         return $resourceTag;
     }

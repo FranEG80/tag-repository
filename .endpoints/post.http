@@ -9,20 +9,44 @@ content-type: application/json
     "typeId": 1
 }
 
+
+
 ###
+### "30000000-0000-0000-0000-000000000000"
 POST http://localhost/ximdex/xtags/public/index.php/api/resource-tags/ HTTP/1.1
 content-type: application/json
 
 {
     "resourceV": "1",
-    "resourceId": "30000000-0000-0000-0000-000000000000",
-    "typeId": 1,
+    "resourceId": "2124bd8e-eabf-4f90-8d2c-2ed1ab121409",
     "vocabularyId": 1,
     "tags": [
         { 
-            "customName": "Name Custom",
+            "name": "TagName Custom",
             "langId": 1,
+            "typeId": 1,
+            "definitionId": 1
+        },
+        { 
+            "name": "TagName custo 2",
+            "langId": 2,
+            "typeId": 1,
             "definitionId": 1
         }
+    ]
+}
+
+
+###
+### "30000000-0000-0000-0000-000000000000"
+POST http://localhost/ximdex/xtags/public/index.php/api/resource-tags/ HTTP/1.1
+content-type: application/json
+
+{
+    "resourceV": "1",
+    "resourceId": "2124bd8e-eabf-4f90-8d2c-2ed1ab121409",
+    "vocabularyId": 1,
+    "tags": [
+        
     ]
 }

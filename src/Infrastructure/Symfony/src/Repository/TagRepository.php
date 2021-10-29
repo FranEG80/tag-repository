@@ -42,34 +42,29 @@ class TagRepository extends ServiceEntityRepository
         return $query->getQuery();
     }
 
+
     // /**
     //  * @return Tag[] Returns an array of Tag objects
     //  */
     /*
-    public function findByExampleField(string $resourceId, $version, $vocabularyId = null, $typeId = null)
+    public function findByExampleField($value)
     {
-        $query = $this->createQueryBuilder('t');
-
-        $query->andWhere('t.version = :version')->setParameter('version', $version);
-        $query->andWhere('t.resource = :resource')->setParameter('resource', $resourceId);
-                
-        if ($vocabularyId) {
-            $query->andWhere('t.vocabulary = :vocabulary')->setParameter('vocabulary', $vocabularyId);
-        }
-
-        if ($typeId) {
-            $query->andWhere('t.type = :type')->setParameter('type', $typeId);
-        }
-
-        return $query->getQuery()->getResult();
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.exampleField = :val')
+            ->setParameter('val', $value)
+            ->orderBy('p.id', 'ASC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+        ;
     }
     */
 
     /*
-    public function findByIdResource($value): ?Tag
+    public function findOneBySomeField($value): ?Tag
     {
-        return $this->createQueryBuilder('t')
-            ->andWhere('t.exampleField = :val')
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.exampleField = :val')
             ->setParameter('val', $value)
             ->getQuery()
             ->getOneOrNullResult()

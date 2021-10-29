@@ -53,7 +53,14 @@ final class ResourceTags extends DomainModel
     {
         $version = null !== $v ? $v : Version::from(self::CURRENT_VERSION_RESOURCE_TAG);
         $instance = new self( ResourceTagId::v4(), $resourceId, $version);
-        // $instance->recordThat(ResourceTagWasCreated::from($instance->id(), $instance->resourceId(), $instance->version()));
+        $instance->recordThat(ResourceTagWasCreated::from(
+            $instance->id(), 
+            $instance->resourceId(),
+            $instance->externalSystem(),
+            $instance->version(),
+            $instance->createdAt(),
+            $instance->updatedAt()
+        ));
 
         return $instance;
     }

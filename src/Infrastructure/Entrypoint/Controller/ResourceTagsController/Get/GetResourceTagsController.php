@@ -127,7 +127,7 @@ class GetResourceTagsController extends AbstractController
         // Get Labels
         foreach ($tagsCollection as $tag) {
             $tagWithLabels = $tag->jsonSerialize();
-            $definition = $tag->definitionId()->value();
+            $definition = $tag->labels()[0]->id()->value();
             // get labels with langs
             $tagWithLabels['labels'] = [];
 

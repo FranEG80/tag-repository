@@ -7,7 +7,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=SchemaRepository::class)
- * @ORM\Table(name="`schema`")
  */
 class Schema
 {
@@ -19,13 +18,12 @@ class Schema
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Vocabulary::class, inversedBy="semantic_schemas")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $vocabulary;
+     * @ORM\Column(type="integer")
+     **/
+    private $vocabulary_id;
 
     /**
-     * @ORM\Column(type="string", length=50)
+     * @ORM\Column(type="string", length=255)
      */
     private $type;
 
@@ -35,23 +33,30 @@ class Schema
     private $schema_url;
 
     /**
-     * @ORM\Column(type="json")
+     * @ORM\Column(type="text")
      */
-    private $relations_parse = [];
+    private $relations_parse;
+
 
     public function getId(): ?int
     {
         return $this->id;
     }
-
-    public function getVocabulary(): ?Vocabulary
+    
+    public function setId(int $id): self
     {
-        return $this->vocabulary;
+        $this->id = $id;
+        return $this;
     }
 
-    public function setVocabulary(?Vocabulary $vocabulary): self
+    public function getVocabularyId(): ?int
     {
-        $this->vocabulary = $vocabulary;
+        return $this->vocabulary_id;
+    }
+
+    public function setVocabularyId(int $vocabulary_id): self
+    {
+        $this->vocabulary_id = $vocabulary_id;
 
         return $this;
     }
@@ -80,12 +85,12 @@ class Schema
         return $this;
     }
 
-    public function getRelationsParse(): ?array
+    public function getRelationsParse(): ?string
     {
         return $this->relations_parse;
     }
 
-    public function setRelationsParse(array $relations_parse): self
+    public function setRelationsParse(string $relations_parse): self
     {
         $this->relations_parse = $relations_parse;
 

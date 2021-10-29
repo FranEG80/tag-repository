@@ -7,12 +7,12 @@ use XTags\Shared\Domain\Model\ValueObject\Uuid;
 use XTags\Infrastructure\Message\Generator\Tags\TagsEvent;
 use PcComponentes\Ddd\Domain\Model\DomainEvent;
 use PcComponentes\Ddd\Domain\Model\ValueObject\DateTimeValueObject;
-use XTags\Domain\Model\Definition\ValueObject\DefinitionId;
 use XTags\Domain\Model\Tags\ValueObject\TagName;
 use XTags\Domain\Model\Tags\ValueObject\TagId;
 use XTags\Domain\Model\Types\ValueObject\TypesId;
 use XTags\Domain\Model\Vocabularies\ValueObject\VocabulariesId;
 use XTags\Domain\Model\ResourceTags\ValueObject\ResourceTagId;
+use XTags\Domain\Model\ValueObject\DefinitionName;
 use XTags\Shared\Domain\Model\ValueObject\DateTimeInmutable;
 use XTags\Shared\Domain\Model\ValueObject\Version;
 
@@ -33,7 +33,7 @@ final class TagWasCreated extends DomainEvent
     public static function from(
         TagId $id,
         TagName $customName,
-        DefinitionId $definitionId,
+        DefinitionName $definitionName,
         ResourceTagId $resourceId,
         VocabulariesId $vocabularyId,
         TypesId $typeId,
@@ -46,7 +46,18 @@ final class TagWasCreated extends DomainEvent
             Uuid::v4(),
             $id,
             new DateTimeValueObject(),
-            self::buildPayload( $id, $customName, $definitionId, $resourceId, $vocabularyId, $typeId, $createdAt, $updatedAt, $version),
+
+            self::buildPayload( 
+                $id, 
+                $customName, 
+                $definitionName,
+                $resourceId, 
+                $vocabularyId, 
+                $typeId, 
+                $createdAt, 
+                $updatedAt, 
+                $version
+            ),
         );
     }
 
@@ -63,6 +74,11 @@ final class TagWasCreated extends DomainEvent
     public function customName(): TagName
     {
         return $this->customName;
+    }
+
+    public function definition(): TagName
+    {
+        return $this->definition;
     }
 
     public function vocabularyId(): VocabulariesId
@@ -90,11 +106,6 @@ final class TagWasCreated extends DomainEvent
         return $this->version;
     }
 
-    public function definitionId()
-    {
-        return $this->definitionId;
-    }
-
     public static function messageName(): string
     {
         return TagsEvent::topic(self::VERSION, self::NAME);
@@ -109,22 +120,21 @@ final class TagWasCreated extends DomainEvent
     {
         $payload = $this->messagePayload();
 
-        $this->name = $payload['name'];
         $this->id = $payload['id']; 
         $this->customName = $payload['customName'];
-        $this->definitionId = $payload['definitionId'];
-        $this->resourceId = $payload['resourceId']; 
-        $this->vocabularyId = $payload['vocabularyId']; 
-        $this->typeId = $payload['typeId']; 
-        $this->createdAt = $payload['createdAt']; 
-        $this->updatedAt = $payload['updatedAt']; 
+        $this->definition = $payload['definition'];
+        $this->resourceId = $payload['resource_id']; 
+        $this->vocabularyId = $payload['vocabulary_id']; 
+        $this->typeId = $payload['type_id']; 
+        $this->createdAt = $payload['created_at']; 
+        $this->updatedAt = $payload['updated_at']; 
         $this->version = $payload['version'];
     }
 
     private static function buildPayload(
         TagId $id,
         TagName $customName,
-        DefinitionId $definitionId,
+        DefinitionName $definition,
         ResourceTagId $resourceId,
         VocabulariesId $vocabularyId,
         TypesId $typeId,
@@ -137,7 +147,7 @@ final class TagWasCreated extends DomainEvent
             \json_encode([
                 'id' => $id, 
                 'customName' => $customName,
-                'definition_id' => $definitionId,
+                'definition' => $definition,
                 'resource_id' => $resourceId, 
                 'vocabulary_id' => $vocabularyId, 
                 'type_id' => $typeId, 

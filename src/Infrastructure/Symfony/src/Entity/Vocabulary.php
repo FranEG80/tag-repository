@@ -54,19 +54,16 @@ class Vocabulary
      */
     private $updated_at;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Schema::class, mappedBy="vocabulary", orphanRemoval=true)
-     */
-    private $semantic_schemas;
-
-    public function __construct()
-    {
-        $this->semantic_schemas = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+    
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+        return $this;
     }
 
     public function getName(): ?string
@@ -153,33 +150,4 @@ class Vocabulary
         return $this;
     }
 
-    /**
-     * @return Collection|Schema[]
-     */
-    public function getSemanticSchemas(): Collection
-    {
-        return $this->semantic_schemas;
-    }
-
-    public function addSemanticSchema(Schema $semanticSchema): self
-    {
-        if (!$this->semantic_schemas->contains($semanticSchema)) {
-            $this->semantic_schemas[] = $semanticSchema;
-            $semanticSchema->setVocabulary($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSemanticSchema(Schema $semanticSchema): self
-    {
-        if ($this->semantic_schemas->removeElement($semanticSchema)) {
-            // set the owning side to null (unless already changed)
-            if ($semanticSchema->getVocabulary() === $this) {
-                $semanticSchema->setVocabulary(null);
-            }
-        }
-
-        return $this;
-    }
 }

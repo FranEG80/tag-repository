@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace XTags\Domain\Model\Definition\ValueObject;
+namespace XTags\Domain\Model\ValueObject;
 
 use PcComponentes\Ddd\Domain\Model\ValueObject\StringValueObject;
 

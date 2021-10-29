@@ -14,7 +14,7 @@ class CreateTagLabelHandler
 
     private CreateTagLabel $create;
 
-    public function __contruct(
+    public function __construct(
         CreateTagLabel $create, 
         MessageBusInterface $eventBus
     )
@@ -26,14 +26,13 @@ class CreateTagLabelHandler
     public function __invoke(CreateTagLabelCommand $command): TagLabel
     {
         $tagLabel = ($this->create)(
-            $command->langId(),        
-            $command->vocabularyId(),        
-            $command->definitionId(),        
-            $command->name(),        
-            $command->version(),  
+            $command->langId(),
+            $command->vocabularyId(),
+            $command->name(),
+            $command->version(),
         );
 
-        $this->dispatchEvents($tagLabel);
+        // $this->dispatchEvents($tagLabel);
 
         return $tagLabel;
     }

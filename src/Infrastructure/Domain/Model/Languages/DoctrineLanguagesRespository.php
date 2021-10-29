@@ -9,7 +9,7 @@ use XTags\App\Entity\Language as DoctrineEntity;
 use XTags\App\Repository\LanguageRepository as DoctrineRespository;
 use XTags\Domain\Model\Languages\ValueObject\LanguagesId;
 use XTags\Domain\Model\Languages\ValueObject\LanguagesName;
-use Xtags\Domain\Model\Languages\Languages as DomainModel;
+use XTags\Domain\Model\Languages\Languages as DomainModel;
 use XTags\Domain\Model\Languages\LanguagesCollection as DomainCollection;
 use XTags\Domain\Model\Languages\LanguagesRepository as DomainRepository;
 
@@ -61,8 +61,11 @@ final class DoctrineLanguagesRespository extends EntityManager implements Domain
 
     }
 
-    public function modelToEntity(DomainModel $languageModel, DoctrineEntity $languageEntity): DoctrineEntity
+    public static function modelToEntity(DomainModel $languageModel, DoctrineEntity $languageEntity = null): DoctrineEntity
     {
+        if (null === $languageEntity) $languageEntity = new DoctrineEntity();
+
+        if ($languageModel->id()) $languageEntity->setId($languageModel->id()->value());
         $languageEntity->setName($languageModel->name()->value());
 
         return $languageEntity;

@@ -5,11 +5,8 @@ namespace XTags\Application\Command\TagLabel\Create;
 
 use Assert\Assert;
 use PcComponentes\Ddd\Application\Command;
-use XTags\Domain\Model\Definition\ValueObject\DefinitionId;
 use XTags\Domain\Model\Languages\ValueObject\LanguagesId;
 use XTags\Domain\Model\TagLabel\ValueObject\LabelName;
-use XTags\Domain\Model\TagLabel\ValueObject\TagName;
-use XTags\Domain\Model\Tags\ValueObject\TagId;
 use XTags\Domain\Model\Vocabularies\ValueObject\VocabulariesId;
 use XTags\Infrastructure\Message\Generator\TagLabel\TagLabelCommand;
 use XTags\Shared\Domain\Model\ValueObject\Uuid;
@@ -22,16 +19,14 @@ class CreateTagLabelCommand extends Command
 
     private LanguagesId $langId;
     private VocabulariesId $vocabularyId;
-    private DefinitionId $definitionId;
-    private Version $version;
-    private LabelName $name;
+    private ?Version $version;
+    private ?LabelName $name;
 
-    public static function create($langId, $vocabularyId, $definitionId, $name, $version):self
+    public static function create($langId, $vocabularyId, $name, $version):self
     {
         return self::fromPayload(Uuid::v4(), [
             'langId' => $langId,
             'vocabularyId' => $vocabularyId,
-            'definitionId' => $definitionId,
             'name' => $name,
             'version' => $version,
         ]);
@@ -47,19 +42,14 @@ class CreateTagLabelCommand extends Command
         return $this->langId;
     }
 
-    public function name(): LabelName
+    public function name(): ?LabelName
     {
         return $this->name;
     }
 
-    public function version(): Version
+    public function version(): ?Version
     {
         return $this->version;
-    }
-
-    public function definitionId(): DefinitionId
-    {
-        return $this->definitionId;
     }
 
     public static function messageName(): string
@@ -83,10 +73,9 @@ class CreateTagLabelCommand extends Command
         //     ->verifyNow()
         // ;
 
-        $this->langId = LanguagesId::from($payload['langId']);        
-        $this->vocabularyId = VocabulariesId::from($payload['vocabularyId']);        
-        $this->definitionId = DefinitionId::from($payload['definitionId']);        
-        $this->name = LabelName::from($payload['name']);        
-        $this->version = Version::from($payload['version']);        
+        $this->langId = LanguagesId::from($payload['langId']);
+        $this->vocabularyId = VocabulariesId::from($payload['vocabularyId']);
+        $this->name = $payload['name'] ?  LabelName::from($payload['name']) : null;
+        $this->version = $payload['version'] ? Version::from($payload['version']) : null;
     }
 }

@@ -9,10 +9,9 @@ use XTags\App\Entity\Type as EntityTypes;
 use XTags\App\Repository\TypeRepository as DoctrineRespository;
 use XTags\Domain\Model\Types\ValueObject\TypesId;
 use XTags\Domain\Model\Types\ValueObject\TypesName;
-use Xtags\Domain\Model\Types\Types as DomainModel;
+use XTags\Domain\Model\Types\Types as DomainModel;
 use XTags\Domain\Model\Types\TypesCollection as DomainCollection;
 use XTags\Domain\Model\Types\TypesRepository as DomainRepository;
-use XTags\Shared\Domain\Model\ValueObject\Id;
 
 final class DoctrineTypesRepository extends EntityManager implements DomainRepository
 {
@@ -31,9 +30,9 @@ final class DoctrineTypesRepository extends EntityManager implements DomainRepos
         $this->saveEntity($typesEntity, $this->em);
     }
 
-    public function find(Id $id): DomainModel
+    public function find(TypesId $id): DomainModel
     {
-        $type = $this->doctrineRepository->find($id);
+        $type = $this->doctrineRepository->find($id->value());
 
         if ($type) $type = $this->entityToModel($type);
 
@@ -53,8 +52,11 @@ final class DoctrineTypesRepository extends EntityManager implements DomainRepos
 
     }
 
-    public function modelToEntity(DomainModel $typesModel, EntityTypes $typesEntity): EntityTypes
+    public function modelToEntity(DomainModel $typesModel, EntityTypes $typesEntity = null): EntityTypes
     {
+        if (null === $typesEntity) $typesEntity = new EntityTypes();
+
+        if (null !== $typesModel->id()) $typesEntity->setId($typesModel->id()->value());
         $typesEntity->setName($typesModel->name()->value());
 
         return $typesEntity;

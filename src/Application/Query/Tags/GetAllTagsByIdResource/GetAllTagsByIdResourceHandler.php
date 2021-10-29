@@ -27,7 +27,6 @@ class GetAllTagsByIdResourceHandler
         return ($this->allTagByIdResourceFinder)(
             $query->resourceId(), 
             $query->vocabularyId(), 
-            $query->typeId(), 
             $query->version()
         );
     }

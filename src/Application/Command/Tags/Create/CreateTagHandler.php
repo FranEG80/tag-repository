@@ -14,7 +14,7 @@ class CreateTagHandler
 
     private CreateTags $create;
 
-    public function __contruct(
+    public function __construct(
         CreateTags $create, 
         MessageBusInterface $eventBus
     )
@@ -26,14 +26,14 @@ class CreateTagHandler
     public function __invoke(CreateTagCommand $command): Tags
     {
         $tag = ($this->create)(
-            $command->langId(),        
-            $command->vocabularyId(),        
-            $command->definitionId(),        
-            $command->name(),        
-            $command->version(),  
+            $command->name(),
+            $command->definition(),
+            $command->resourceId(),
+            $command->vocabularyId(),
+            $command->typesId()
         );
 
-        $this->dispatchEvents($tag);
+        // $this->dispatchEvents($tag);
 
         return $tag;
     }

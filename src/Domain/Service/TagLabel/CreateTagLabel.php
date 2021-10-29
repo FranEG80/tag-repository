@@ -3,15 +3,12 @@ declare(strict_types=1);
 
 namespace XTags\Domain\Service\TagLabel;
 
-use XTags\Domain\Model\Definition\ValueObject\DefinitionId;
 use XTags\Domain\Model\Languages\ValueObject\LanguagesId;
 use XTags\Domain\Model\TagLabel\Exception\TagLabelAlreadyExistException;
 use XTags\Domain\Model\TagLabel\TagLabel;
 use XTags\Domain\Model\TagLabel\TagLabelRepository;
 use XTags\Domain\Model\TagLabel\ValueObject\LabelName;
-use XTags\Domain\Model\Tags\ValueObject\TagId;
 use XTags\Domain\Model\Vocabularies\ValueObject\VocabulariesId;
-use XTags\Infrastructure\Domain\Model\TagLabel\DoctrineTagLabelRepository;
 use XTags\Infrastructure\Exceptions\Api\TagLabelResources;
 use XTags\Shared\Domain\Model\ValueObject\Version;
 
@@ -27,14 +24,16 @@ class CreateTagLabel
     public function __invoke(
         LanguagesId $languageId,
         VocabulariesId $vocabulariesId, 
-        DefinitionId $definitionId,       
-        LabelName $labelName,
-        Version $version  
+        LabelName $labelName = null,
+        Version $version = null
     ): TagLabel
     {
-        $this->assertTagDoesNotExists($definitionId, $languageId, $vocabulariesId, $version);
+        $tagLabels = $this->checkIfExist($languageId, $vocabulariesId, $version);
+        
+        if (count($tagLabels) > 0) return $tagLabels; 
+        // $this->assertTagDoesNotExists($tagLabels);
 
-        $tag = TagLabel::create( TagId::v4(), $labelName, $languageId, $definitionId, $vocabulariesId );
+        $tag = TagLabel::create( $labelName, $languageId, $vocabulariesId );
 
         $this->repository->save($tag);
 
@@ -42,20 +41,25 @@ class CreateTagLabel
         
     }
 
-    public function assertTagDoesNotExists(DefinitionId $definitionId, LanguagesId $languagesId, VocabulariesId $vocabulariesId, Version $version): void
+    public function assertTagDoesNotExists($tagLabels): void
     {
+        if (count($tagLabels) > 0) {
+            throw new TagLabelAlreadyExistException(TagLabelResources::create(), null);
+        }
+    }
+
+    public function checkIfExist( $languagesId, $vocabulariesId, $version)
+    {
+
         $tagLabels = $this->repository->findBy(
             [
-                'definitionId' => $definitionId ? $definitionId->value() : null,
-                'lang_id' => $languagesId ? $languagesId->value() : null,
+                'language' => $languagesId ? $languagesId->value() : null,
                 'version' => $version ? $version->value() : TagLabel::CURRENT_VERSION_TAG_LABEL,
                 'vocabulary' => $vocabulariesId ? $vocabulariesId->value() : null
             ],
             ['name' => 'ASC']
         );
-
-        if (count($tagLabels) > 0) {
-            throw new TagLabelAlreadyExistException(TagLabelResources::create(), null);
-        }
+        return $tagLabels;
     }
+    
 }

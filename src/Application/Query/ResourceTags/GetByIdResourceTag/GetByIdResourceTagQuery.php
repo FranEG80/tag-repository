@@ -51,7 +51,7 @@ class GetByIdResourceTagQuery extends Query
         $payload = $this->messagePayload();
 
         Assert::lazy()
-            ->that($payload['resourceId'], 'resourceId')->uuid()
+            // ->that($payload['resourceId'], 'resourceId')->uuid()
             ->that($payload['version'], 'version')->nullOr()->string()
             ->verifyNow()
         ;

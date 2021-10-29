@@ -5,7 +5,9 @@ namespace XTags\Domain\Model\Tags;
 
 use Assert\Assertion;
 use PcComponentes\Ddd\Domain\Model\ValueObject\CollectionValueObject;
-use XTags\Domain\Model\Definition\ValueObject\DefinitionId;
+use XTags\Domain\Model\ResourceTags\ValueObject\ExternalResourceId;
+use XTags\Domain\Model\ResourceTags\ValueObject\ResourceTagId;
+use XTags\Domain\Model\ValueObject\DefinitionName;
 
 final class TagsCollection extends CollectionValueObject 
 {
@@ -63,14 +65,11 @@ final class TagsCollection extends CollectionValueObject
         return false;
     }
 
-    /**
-     * @param Tags|string $tag
-     */
-    public function hasDefinition($tag): bool
+    public function hasTag($id): bool
     {
-        $definition = $tag instanceof Tags ? $tag->definitionId() : DefinitionId::from((int) $tag);
+        $value = DefinitionName::from((string) $id);
         foreach ($this as $item) {
-            if ($item->definitionId()->equalTo($definition)) {
+            if ($item->definition()->equalTo($value)) {
                 return true;
             }
         }

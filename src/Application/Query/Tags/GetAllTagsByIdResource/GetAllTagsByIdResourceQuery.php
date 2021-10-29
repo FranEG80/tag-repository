@@ -20,15 +20,13 @@ class GetAllTagsByIdResourceQuery extends Query
     private ResourceTagId $resourceId;
     private ?VocabulariesId $vocabularyId;
     private ?Version $version;
-    private ?TypesId $typeId;
 
-    public static function create($resourceId, $version, $vocabulary, $typeId):self
+    public static function create($resourceId, $version, $vocabulary):self
     {
         return self::fromPayload(Uuid::v4(), [
             'resourceId' => $resourceId,
             'version' => $version,
             'vocabularyId' => $vocabulary,
-            'typeId' => $typeId
         ]);
     }
 
@@ -40,11 +38,6 @@ class GetAllTagsByIdResourceQuery extends Query
     public function vocabularyId()
     {
         return $this->vocabularyId;
-    }
-    
-    public function typeId()
-    {
-        return $this->typeId;
     }
 
     public function version()
@@ -70,13 +63,11 @@ class GetAllTagsByIdResourceQuery extends Query
             ->that($payload['resourceId'], 'resourceId')->uuid()
             ->that($payload['version'], 'version')->nullOr()->string()
             ->that($payload['vocabularyId'], 'vocabularyId')->nullOr()->integer()
-            ->that($payload['typeId'], 'typeId')->nullOr()->integer()
             ->verifyNow()
         ;
         
         $this->resourceId = ResourceTagId::from($payload['resourceId']);
         $this->version = $payload['version'] ? Version::from($payload['version']) : null;
         $this->vocabularyId = $payload['vocabularyId'] ? VocabulariesId::from($payload['vocabularyId']) : null;
-        $this->typeId = $payload['typeId'] ? TypesId::from($payload['typeId']) : null;
     }
 }

@@ -4,9 +4,11 @@ declare(strict_types=1);
 namespace XTags\Infrastructure\Domain\Model\Tags;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Uid\Uuid;
 use XTags\App\Entity\EntityManager;
-use XTags\App\Entity\Tag as DoctrineEntity;use XTags\App\Repository\TagRepository as DoctrineRespository;
-use XTags\Domain\Model\Definition\ValueObject\DefinitionId;
+use XTags\App\Entity\Tag as DoctrineEntity;
+use XTags\App\Repository\TagRepository as DoctrineRespository;
+use XTags\Domain\Model\ValueObject\DefinitionName;
 use XTags\Infrastructure\Domain\Model\ResourceTags\DoctrineResourceTagsRepository as DoctrineResourceRespository;
 use XTags\Infrastructure\Domain\Model\TagLabel\DoctrineTagLabelRepository as DoctrineLabelRespository;
 use XTags\Infrastructure\Domain\Model\Types\DoctrineTypesRepository as DoctrineTypeRepository;
@@ -75,6 +77,18 @@ class DoctrineTagsRepository extends EntityManager implements DomainRepository
         return DomainCollection::from($collection);
     }
 
+    public function findBy($criteria, $opts = null): DomainCollection
+    {
+        $collection = [];
+        $tags = $this->doctrineRepository->findBy($criteria, $opts);
+        
+        foreach ($tags as $tag) {
+            $collection[] = $this->entityToModel($tag);
+        }
+        
+        return DomainCollection::from($collection);
+    }
+
     public function findAllByResourceId(
         ResourceTagId $id, 
         Version $version = null, 
@@ -90,14 +104,14 @@ class DoctrineTagsRepository extends EntityManager implements DomainRepository
         $tags = $this->doctrineRepository->findByIdResource($id->value(), $version->value(), $vocabularyId, $typeId);
 
         foreach ($tags as $tag) {
-            $tagWithLanguage = $this->entityToModel($tag);
-            $labelsEntity = $tag->getDefinition()->getLabels();
-            $labels = [];
-            foreach($labelsEntity as $label) {
-                $labels[] = DoctrineLabelRespository::entityToModel($label);
-            }
-            $tagWithLanguage->labels = $labels;
-            $tagsCollection[] = $tagWithLanguage;
+            // $tagWithLanguage = $this->entityToModel($tag);
+            // // $labelsEntity = $tag->getLabels();
+            // $labels = [];
+            // foreach($labelsEntity as $label) {
+            //     $labels[] = DoctrineLabelRespository::entityToModel($label);
+            // }
+            // $tagWithLanguage->labels = $labels;
+            // $tagsCollection[] = $tagWithLanguage;
         }
         return DomainCollection::from($tagsCollection);
     }
@@ -114,17 +128,18 @@ class DoctrineTagsRepository extends EntityManager implements DomainRepository
     private function modelToEntity(DomainModel $tagsModel): DoctrineEntity
     {
         $entity = new DoctrineEntity();
-        
-        $resource = $this->resourceDomainRepository->find($tagsModel->resourceId());
-        $vocabulary = $this->vocabularyRepository->find($tagsModel->vocabularyId());
-        $type = $this->typesRepository->find($tagsModel->typeId());
+
+        if (null !== $tagsModel->id()) $entity->setId(Uuid::fromString($tagsModel->id()->value()));    
+
         $entity->setName($tagsModel->customName()->value());
-        $entity->setResource($resource);
-        $entity->setType($type);
-        $entity->setVocabulary($vocabulary);
+
+        $entity->setResource(Uuid::fromString($tagsModel->resourceId()->value()));
+        $entity->setType($tagsModel->typeId()->value());
+        $entity->setVocabulary((int) $tagsModel->vocabularyId()->value());
         $entity->setVersion($tagsModel->version()->value());
         $entity->setUpdatedAt($tagsModel->createdAt());
         $entity->setCreatedAt($tagsModel->updatedAt());
+        $entity->setDefinition($tagsModel->definition()->value());
 
         return $entity;
     }
@@ -134,10 +149,10 @@ class DoctrineTagsRepository extends EntityManager implements DomainRepository
         $tagsModel = DomainModel::from(
             TagId::from((string ) $tags->getId()),
             TagName::from($tags->getName()),
-            DefinitionId::from((int) $tags->getDefinition()->getName()),
-            ResourceTagId::from($tags->getResource()->getId()->jsonSerialize()),
-            VocabulariesId::from($tags->getVocabulary()->getId()),
-            TypesId::from($tags->getType()->getId()),
+            DefinitionName::from($tags->getDefinition()),
+            ResourceTagId::from($tags->getResource()->toRfc4122()),
+            VocabulariesId::from($tags->getVocabulary()),
+            TypesId::from($tags->getType()),
             DateTimeInmutable::fromAnotherDateTime($tags->getCreatedAt()),
             DateTimeInmutable::fromAnotherDateTime($tags->getUpdatedAt()),
             Version::from($tags->getVersion())
