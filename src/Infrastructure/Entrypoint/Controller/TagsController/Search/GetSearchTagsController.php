@@ -20,6 +20,7 @@ class GetSearchTagsController extends AbstractController
         $vocabulary = $request->get('vocabulary', 'thesaurus');
         $mode = $request->get('mode', 'strict');
         $lang = $request->get('lang', 'es');
+        $labellang = $request->get('labellang', 'es');
         $schema = $request->get('schema', 'json-ld');
 
         $response = new JsonResponse();
@@ -46,7 +47,7 @@ class GetSearchTagsController extends AbstractController
         $search .= "&vocab={$vocabulary}";
         // lang define el lenguaje de busqueda, si no se define busca en todos
         $search .= "&lang={$lang}";
-        $search .= "&labellang={$lang}";
+        $search .= "&labellang={$labellang}";
 
         return $search;
     }

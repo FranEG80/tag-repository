@@ -4,6 +4,7 @@ namespace XTags\App\Entity;
 
 use XTags\App\Repository\LabelRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @ORM\Entity(repositoryClass=LabelRepository::class)
@@ -28,7 +29,7 @@ class Label
     private $name;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="uuid")
      **/
     private $tag;
 
@@ -68,12 +69,12 @@ class Label
         return $this;
     }
     
-    public function getTag(): ?int
+    public function getTag(): ?Uuid
     {
         return $this->tag;
     }
 
-    public function setTag(int $tag): self
+    public function setTag(Uuid $tag): self
     {
         $this->tag = $tag;
         return $this;

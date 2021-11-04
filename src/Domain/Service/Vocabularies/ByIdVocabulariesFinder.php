@@ -8,6 +8,7 @@ use XTags\Domain\Model\Vocabularies\VocabulariesRepository;
 use XTags\Domain\Model\Vocabularies\Exception\VocabulariesDoesNotExistException;
 use XTags\Domain\Model\Vocabularies\ValueObject\VocabulariesId;
 use XTags\Infrastructure\Exceptions\Api\VocabulariesResource;
+use XTags\Shared\Domain\Model\ValueObject\Version;
 
 class ByIdVocabulariesFinder
 {

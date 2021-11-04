@@ -7,18 +7,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\HandleTrait;
 use Symfony\Component\Messenger\MessageBusInterface;
 use XTags\Application\Command\ResourceTags\Create\CreateResourceTagCommand;
-use XTags\Application\Command\TagLabel\Create\CreateTagLabelCommand;
 use XTags\Application\Command\Tags\Create\CreateTagCommand;
 use XTags\Application\Command\Tags\RemoveManyTags\RemoveManyTagsCommand;
-use XTags\Application\Query\Languages\GetAllLanguages\GetAllLanguagesQuery;
 use XTags\Application\Query\ResourceTags\GetByIdResourceTag\GetByIdResourceTagQuery;
 use XTags\Application\Query\Tags\GetAllTagsByIdResource\GetAllTagsByIdResourceQuery;
 use XTags\Domain\Model\ResourceTags\ResourceTags;
-use XTags\Domain\Model\ResourceTags\ValueObject\ResourceTagId;
 use XTags\Domain\Model\TagLabel\TagLabel;
 use XTags\Domain\Model\Tags\Tags;
 
@@ -43,22 +39,26 @@ class SaveResourceTagsController extends AbstractController
         $body = new ParameterBag(\json_decode($request->getContent(),true));
         $tags = $body->get('tags');
 
+
         if (!$this->checkParametersRequired($body->all(), self::PARAMETERS_RESOURCE_REQUIRED)) {
             return new JsonResponse([
                 "error" => 'Resource Paramaters required'
-            ], Response::HTTP_NOT_ACCEPTABLE);
+            ], JsonResponse::HTTP_NOT_ACCEPTABLE);
         };
 
         $resourceVersion = $body->has('version') ? $body->get('version') : null;
         $resource = $this->getResource($body->get('resourceId'), $resourceVersion);
 
+        $vocabularyId = $body->get('vocabularyId');
+
         // get all tags of resource
-        $resourceTags = $this->handle(GetAllTagsByIdResourceQuery::create($resource->id()->value(), null, $body->get('vocabularyId')));
-        // $resourceTags = $resourceTags->jsonSerialize();
+        $resourceTags = $this->handle(GetAllTagsByIdResourceQuery::create($resource->id()->value(), null, $vocabularyId));
 
-        // get all ids labels each tags
+        // get definition by vocabulary
+        // $vocabulary = $this->handle(GetByIdVocabularyQuery::create($vocabularyId));
 
-        $languages = $this->handle(GetAllLanguagesQuery::create())->jsonSerialize();
+        // get languages
+        // $languages = $this->handle(GetAllLanguagesQuery::create())->jsonSerialize();
         
         // check old tags && old labels
         $news = [];
@@ -79,9 +79,8 @@ class SaveResourceTagsController extends AbstractController
 
         $resourceTags = $resourceTags->jsonSerialize();
         foreach ($resourceTags as $resourceTag) {
-            if (!array_key_exists($resourceTag->definition()->value(), $idTagsNews)) $olds[] = $resourceTag->id();
+            if (!array_key_exists($resourceTag->definition()->value(), array_flip($idTagsNews))) $olds[] = $resourceTag->id()->value();
         }
-        
         // update tags
         foreach ($news as $new) {
             if (!array_key_exists('name', $new)) $new['name'] = null;
@@ -92,7 +91,7 @@ class SaveResourceTagsController extends AbstractController
             $this->handle(CreateTagCommand::create(
                 $definitionId, 
                 $resource->id()->value(),
-                $body->get('vocabularyId'), 
+                $vocabularyId, 
                 $new['definitionId'], 
                 $new['name'], 
                 $new['tagv'],
@@ -101,9 +100,11 @@ class SaveResourceTagsController extends AbstractController
         }
 
         // Remove olds
-        $this->handle(RemoveManyTagsCommand::create($olds));
+        if (count($olds) > 0) {
+            $this->handle(RemoveManyTagsCommand::create($olds));
+        }
 
-        return new JsonResponse(null, Response::HTTP_OK);
+        return new JsonResponse(null, JsonResponse::HTTP_OK);
     }
 
     private function getResource(string $resourceId, $version): ?ResourceTags

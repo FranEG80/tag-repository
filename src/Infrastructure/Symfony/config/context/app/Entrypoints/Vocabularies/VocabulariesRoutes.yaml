@@ -3,6 +3,11 @@ vocabularies_search.get:
   methods: [GET]
   controller: XTags\Infrastructure\Entrypoint\Controller\VocabulariesController\Search\GetSearchVocabulariesController
 
+vocabularies_info.get:
+  path: /info/{id?}{vocabulary?}
+  methods: [GET]
+  controller: XTags\Infrastructure\Entrypoint\Controller\VocabulariesController\GetInfoByDefinition\GetInfoByDefinitionController
+
 vocabularies_search.default:
   path: /
   methods: [POST, PUT, DELETE, PATCH]

@@ -7,6 +7,8 @@ GET http://localhost/ximdex/xtags/public/index.php/api/vocabularies/search?q=ab
 ###
 GET http://localhost/ximdex/xtags/public/index.php/api/vocabularies/
 
+### Info detail of definition ID
+GET http://localhost/ximdex/xtags/public/index.php/api/vocabularies/info?q=concept6517&vocabulary=1
 
 #### LANGUAGES
 
@@ -29,7 +31,7 @@ GET http://localhost/ximdex/xtags/public/index.php/api/tag-label/
 #### RESOURCE_TAGS
 
 ###
-GET http://localhost/ximdex/xtags/public/index.php/api/resource-tags?id=2124bd8e-eabf-4f90-8d2c-2ed1ab121409
+GET http://localhost/ximdex/xtags/public/index.php/api/resource-tags?id=913e923f-3485-41e0-9d0a-cf66f2d8842f
 
 ###
 GET http://localhost/ximdex/xtags/public/index.php/api/resource-tags?id=a4cdcfaf-4ec0-4f0a-ac88-30ae71a2c622&version=1

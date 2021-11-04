@@ -126,34 +126,34 @@ class GetResourceTagsController extends AbstractController
 
         // Get Labels
         foreach ($tagsCollection as $tag) {
-            $tagWithLabels = $tag->jsonSerialize();
-            $definition = $tag->labels()[0]->id()->value();
+            // $tagWithLabels = $tag->jsonSerialize();
+            // $definition = $tag->labels()[0]->id()->value();
             // get labels with langs
-            $tagWithLabels['labels'] = [];
+            // $tagWithLabels['labels'] = [];
 
-            foreach ($tag->labels as $label) {
-                if (!$this->isEqualOrNull($this->getId($vocab), $label->vocabularyId()->value())) continue;
-                if (!$this->isEqualOrNull($this->getId($lang), $label->langId()->value())) continue;
+            // foreach ($tag->labels as $label) {
+            //     if (!$this->isEqualOrNull($this->getId($vocab), $label->vocabularyId()->value())) continue;
+            //     if (!$this->isEqualOrNull($this->getId($lang), $label->langId()->value())) continue;
                 
-                $vocabulary = null !== $this->getId($vocab)
-                    ? $vocabularies
-                    : $vocabularies->filter(fn($_vocabulary) => $this->getId($_vocabulary) == $label->vocabularyId()->value())->first();
+            //     $vocabulary = null !== $this->getId($vocab)
+            //         ? $vocabularies
+            //         : $vocabularies->filter(fn($_vocabulary) => $this->getId($_vocabulary) == $label->vocabularyId()->value())->first();
 
-                if (!$tag->vocabularyId()->equalTo($vocabulary->id())) continue;
+            //     if (!$tag->vocabularyId()->equalTo($vocabulary->id())) continue;
 
-                $language = null !== $this->getId($lang)
-                    ? $languages
-                    : $languages->filter(fn($language) => $this->getId($language) == $label->langId()->value())->first();
+            //     $language = null !== $this->getId($lang)
+            //         ? $languages
+            //         : $languages->filter(fn($language) => $this->getId($language) == $label->langId()->value())->first();
 
-                $label = $label->jsonSerialize();
+            //     $label = $label->jsonSerialize();
 
-                $label['language'] = $language->name();
-                $label['vocabulary'] = $vocabulary->name();
+            //     $label['language'] = $language->name();
+            //     $label['vocabulary'] = $vocabulary->name();
 
-                $tagWithLabels['labels'][$definition][] =  $label;
+            //     $tagWithLabels['labels'][$definition][] =  $label;
                 
-            }
-            $tags[] = $tagWithLabels;
+            // }
+            $tags[] = $tag;
         }
         return $tags;
     }

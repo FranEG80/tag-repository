@@ -5,6 +5,7 @@ namespace XTags\App\Repository;
 use XTags\App\Entity\Tag;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @method Tag|null find($id, $lockMode = null, $lockVersion = null)
@@ -22,24 +23,32 @@ class TagRepository extends ServiceEntityRepository
     public function findByIdResource(string $resourceId, $version, $vocabularyId = null, $typeId = null)
     {
         $criteria = [
-            'resource' => $resourceId,
+            'resource' => Uuid::fromString($resourceId),
             'version' => $version
         ];
 
         if (null !== $vocabularyId) $criteria['vocabulary'] = $vocabularyId; 
         if (null !== $typeId) $criteria['type'] = $typeId;
 
-        return $this->findBy($criteria);
+        return $this->findBy([
+            'resource' => $resourceId
+        ]);
     }
 
     public function deleteManyById(array $ids)
     {
         $query = $this->createQueryBuilder('t');
-        $query->delete('t')
-            ->where('id in (:ids)')
-            ->setParameter(':ids', array($ids));
-        
-        return $query->getQuery();
+        $query->delete()
+            ->where('t.id IN (:ids)')
+            ->setParameter(
+                ':ids', 
+                array_map(function ($id) {
+                    return $id->toBinary();
+                },
+                $ids
+            ));
+        $q = $query->getQuery();
+        $q->execute();        
     }
 
 

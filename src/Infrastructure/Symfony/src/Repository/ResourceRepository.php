@@ -5,6 +5,7 @@ namespace XTags\App\Repository;
 use XTags\App\Entity\Resource;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @method Resource|null find($id, $lockMode = null, $lockVersion = null)
@@ -21,9 +22,9 @@ class ResourceRepository extends ServiceEntityRepository
     
     public function findByExternalResourceId(string $externalId, string $version): ?Resource
     {
+        $externalId = Uuid::fromString($externalId);
         return $this->findOneBy([
-            'external_id' => $externalId,
-            'version' => $version
+            'external_id' => $externalId
         ]);
     }
 

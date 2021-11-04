@@ -8,14 +8,14 @@ use XTags\Domain\Service\Vocabularies\ByIdVocabulariesFinder;
 
 class GetByIdVocabularyHandler
 {
-    private ByIdVocabulariesFinder $allVocabulariesFinder;
+    private ByIdVocabulariesFinder $byIdVocabularyFinder;
 
     public function __construct(
-        ByIdVocabulariesFinder $allVocabulariesFinder,
+        ByIdVocabulariesFinder $byIdVocabularyFinder,
         MessageBusInterface $eventBus
     )
     {
-        $this->allVocabulariesFinder = $allVocabulariesFinder;
+        $this->byIdVocabularyFinder = $byIdVocabularyFinder;
     }
 
     /**
@@ -23,6 +23,6 @@ class GetByIdVocabularyHandler
      */
     public function __invoke(GetByIdVocabularyQuery $query)
     {
-        return ($this->allVocabulariesFinder)($query->id());
+        return ($this->byIdVocabularyFinder)($query->id());
     }
 }

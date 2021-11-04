@@ -5,6 +5,7 @@ namespace XTags\Application\Command\Tags\RemoveManyTags;
 
 use Assert\Assert;
 use PcComponentes\Ddd\Application\Command;
+use XTags\Domain\Model\Tags\ValueObject\TagId;
 use XTags\Infrastructure\Message\Generator\Tags\TagsCommand;
 use XTags\Shared\Domain\Model\ValueObject\Uuid;
 
@@ -41,13 +42,13 @@ class RemoveManyTagsCommand extends Command
     {
         $payload = $this->messagePayload();
 
-        // Assert::lazy()
-        //     ->that($payload['tagId'], 'tagId')->uuid()
-        //     ->that($payload['langId'], 'langId')->integer()
-        //     ->that($payload['name'], 'name')->string()
-        //     ->verifyNow()
-        // ;
 
-        $this->tags =$payload['tags'];        
+        Assert::lazy()
+            ->that($payload['tags'], 'tags')->isArray()
+            // TODO check each element array is string // uuid
+            ->verifyNow()
+        ;
+
+        $this->tags = $payload['tags'];        
     }
 }

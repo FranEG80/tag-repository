@@ -104,14 +104,8 @@ class DoctrineTagsRepository extends EntityManager implements DomainRepository
         $tags = $this->doctrineRepository->findByIdResource($id->value(), $version->value(), $vocabularyId, $typeId);
 
         foreach ($tags as $tag) {
-            // $tagWithLanguage = $this->entityToModel($tag);
-            // // $labelsEntity = $tag->getLabels();
-            // $labels = [];
-            // foreach($labelsEntity as $label) {
-            //     $labels[] = DoctrineLabelRespository::entityToModel($label);
-            // }
-            // $tagWithLanguage->labels = $labels;
-            // $tagsCollection[] = $tagWithLanguage;
+
+            $tagsCollection[] = $this->entityToModel($tag);
         }
         return DomainCollection::from($tagsCollection);
     }
@@ -119,7 +113,12 @@ class DoctrineTagsRepository extends EntityManager implements DomainRepository
     public function deleteManyById(array $ids): void
     {
         $deleteIds = [];
-        foreach ($ids as $id) $deleteIds[] = $id instanceof TagId ? $id->value() : $id;
+        foreach ($ids as $id) {
+            $id = $id instanceof TagId ? $id->value() : $id;
+            $deleteIds[] = Uuid::fromString($id);
+
+            
+        }
 
         $this->doctrineRepository->deleteManyById($deleteIds);
 

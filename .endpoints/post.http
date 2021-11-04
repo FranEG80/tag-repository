@@ -12,7 +12,6 @@ content-type: application/json
 
 
 ###
-### "30000000-0000-0000-0000-000000000000"
 POST http://localhost/ximdex/xtags/public/index.php/api/resource-tags/ HTTP/1.1
 content-type: application/json
 
@@ -25,13 +24,13 @@ content-type: application/json
             "name": "TagName Custom",
             "langId": 1,
             "typeId": 1,
-            "definitionId": 1
+            "definitionId": 312
         },
         { 
-            "name": "TagName custo 2",
+            "name": "TagName custo 3",
             "langId": 2,
             "typeId": 1,
-            "definitionId": 1
+            "definitionId": 1333
         }
     ]
 }
@@ -43,10 +42,19 @@ POST http://localhost/ximdex/xtags/public/index.php/api/resource-tags/ HTTP/1.1
 content-type: application/json
 
 {
-    "resourceV": "1",
-    "resourceId": "2124bd8e-eabf-4f90-8d2c-2ed1ab121409",
-    "vocabularyId": 1,
-    "tags": [
-        
-    ]
-}
+    "resourceId":"913e923f-3485-41e0-9d0a-cf66f2d8842f",
+    "vocabularyId":1,
+    "tags":[
+        {
+            "langId":1,
+            "typeId":1,
+            "name":"Entri",
+            "definitionId":"0"
+        },
+        {
+            "langId":1,
+            "typeId":1,
+            "name":"otor",
+            "definitionId":"0"
+        },{"langId":1,"typeId":1,"name":"Iberian cultures","definitionId":"concept6952"}]}
+

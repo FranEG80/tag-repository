@@ -25,7 +25,7 @@ class RemoveManyTagsTagHandler
     public function __invoke(RemoveManyTagsCommand $command): void
     { 
         $tags = $command->tags();
-        if (count($tags) > 0 )  ($this->removeMany)();
+        if (count($tags) > 0 )  ($this->removeMany)($tags);
     }
 
 }

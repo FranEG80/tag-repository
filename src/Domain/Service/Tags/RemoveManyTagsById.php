@@ -2,10 +2,7 @@
 
 namespace XTags\Domain\Service\Tags;
 
-use XTags\Domain\Model\Tags\Exception\TagsAlreadyExistException;
 use XTags\Domain\Model\Tags\TagsRepository;
-use XTags\Domain\Model\Tags\ValueObject\TagId;
-use XTags\Infrastructure\Exceptions\Api\TagsResources;
 
 class RemoveManyTagsById
 {

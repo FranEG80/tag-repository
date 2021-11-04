@@ -8,6 +8,7 @@ use PcComponentes\Ddd\Application\Query;
 use XTags\Domain\Model\Vocabularies\ValueObject\VocabulariesId;
 use XTags\Infrastructure\Message\Generator\Vocabularies\VocabulariesQuery;
 use XTags\Shared\Domain\Model\ValueObject\Uuid;
+use XTags\Shared\Domain\Model\ValueObject\Version;
 
 class GetByIdVocabularyQuery extends Query
 {
@@ -20,13 +21,18 @@ class GetByIdVocabularyQuery extends Query
     public static function create($id):self
     {
         return self::fromPayload(Uuid::v4(), [
-            'id' => $id,
+            'id' => $id
         ]);
     }
 
     public function id()
     {
         return $this->id;
+    }
+
+    public function version()
+    {
+        return $this->version;
     }
 
     public static function messageName(): string
@@ -44,10 +50,10 @@ class GetByIdVocabularyQuery extends Query
         $payload = $this->messagePayload();
 
         Assert::lazy()
-            ->that($payload['id'], 'id')->integer()
+            ->that($payload['id'], 'id')->integerish()
             ->verifyNow()
         ;
 
-        $this->id = $payload['id'] ? VocabulariesId::from($payload['id']) : null;
+        $this->id = VocabulariesId::from($payload['id']);
     }
 }
